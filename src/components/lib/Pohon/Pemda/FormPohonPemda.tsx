@@ -171,11 +171,11 @@ export const FormPohonPemda: React.FC<{
         const API_URL = process.env.NEXT_PUBLIC_API_URL;
         const taggingData = [
             ...(UnggulanBupati ? [{
-                nama_tagging: "Program Unggulan Bupati",
+                nama_tagging: "Program Unggulan Walikota",
                 keterangan_tagging: data.tagging?.['0']?.keterangan_tagging || '',
             }] : []),
             ...(HariKerja ? [{
-                nama_tagging: "100 Hari Kerja Bupati",
+                nama_tagging: "100 Hari Kerja Walikota",
                 keterangan_tagging: data.tagging?.['1']?.keterangan_tagging || '',
             }] : []),
             ...(UnggulanPusat ? [{
@@ -354,7 +354,7 @@ export const FormPohonPemda: React.FC<{
                                                     className="w-[20px] h-[20px] border border-black rounded-full"
                                                 ></button>
                                             }
-                                            <p onClick={() => setUnggulanBupati((prev) => !prev)} className={`cursor-pointer ${UnggulanBupati && 'text-emerald-500'}`}>Program Bupati</p>
+                                            <p onClick={() => setUnggulanBupati((prev) => !prev)} className={`cursor-pointer ${UnggulanBupati && 'text-emerald-500'}`}>Program Walikota</p>
                                         </div>
                                         <div className="flex flex-col items-center">
                                             {HariKerja ?
@@ -372,7 +372,7 @@ export const FormPohonPemda: React.FC<{
                                                     className="w-[20px] h-[20px] border border-black rounded-full"
                                                 ></button>
                                             }
-                                            <p onClick={() => setHariKerja((prev) => !prev)} className={`cursor-pointer ${HariKerja && 'text-emerald-500'}`}>100 Hari Kerja Bupati</p>
+                                            <p onClick={() => setHariKerja((prev) => !prev)} className={`cursor-pointer ${HariKerja && 'text-emerald-500'}`}>100 Hari Kerja Walikota</p>
                                         </div>
                                         <div className="flex flex-col items-center">
                                             {UnggulanPusat ?
@@ -400,12 +400,12 @@ export const FormPohonPemda: React.FC<{
                                             render={({ field }) => (
                                                 <div className="flex flex-col py-3">
                                                     <label className="uppercase text-xs font-bold text-gray-700 mb-2">
-                                                        Keterangan Program Unggulan Bupati :
+                                                        Keterangan Program Unggulan Walikota :
                                                     </label>
                                                     <input
                                                         {...field}
                                                         className="border px-4 py-2 rounded-lg"
-                                                        placeholder="Masukkan Keterangan Program Unggulan Bupati"
+                                                        placeholder="Masukkan Keterangan Program Unggulan Walikota"
                                                     />
                                                 </div>
                                             )}
@@ -418,12 +418,12 @@ export const FormPohonPemda: React.FC<{
                                             render={({ field }) => (
                                                 <div className="flex flex-col py-3">
                                                     <label className="uppercase text-xs font-bold text-gray-700 mb-2">
-                                                        Keterangan 100 Hari Kerja Bupati :
+                                                        Keterangan 100 Hari Kerja Walikota :
                                                     </label>
                                                     <input
                                                         {...field}
                                                         className="border px-4 py-2 rounded-lg"
-                                                        placeholder="Masukkan Keterangan 100 Hari Kerja Bupati"
+                                                        placeholder="Masukkan Keterangan 100 Hari Kerja Walikota"
                                                     />
                                                 </div>
                                             )}
@@ -1118,8 +1118,8 @@ export const FormEditPohon: React.FC<{
                 }
                 const { tagging } = data;
 
-                const unggulanBupatiTag = tagging?.find((t: Tagging) => t.nama_tagging === "Program Unggulan Bupati");
-                const hariKerjaTag = tagging?.find((t: Tagging) => t.nama_tagging === "100 Hari Kerja Bupati");
+                const unggulanBupatiTag = tagging?.find((t: Tagging) => t.nama_tagging === "Program Unggulan Walikota");
+                const hariKerjaTag = tagging?.find((t: Tagging) => t.nama_tagging === "100 Hari Kerja Walikota");
                 const unggulanPusatTag = tagging?.find((t: Tagging) => t.nama_tagging === "Program Unggulan Pemerintah Pusat");
 
                 const taggingFieldsDefaultValue = {
@@ -1174,11 +1174,11 @@ export const FormEditPohon: React.FC<{
         })) || [];
         const taggingData = [
             ...(UnggulanBupati ? [{
-                nama_tagging: "Program Unggulan Bupati",
+                nama_tagging: "Program Unggulan Walikota",
                 keterangan_tagging: data.tagging?.['0']?.keterangan_tagging || '',
             }] : []),
             ...(HariKerja ? [{
-                nama_tagging: "100 Hari Kerja Bupati",
+                nama_tagging: "100 Hari Kerja Walikota",
                 keterangan_tagging: data.tagging?.['1']?.keterangan_tagging || '',
             }] : []),
             ...(UnggulanPusat ? [{
@@ -1360,7 +1360,7 @@ export const FormEditPohon: React.FC<{
                                             className="w-[20px] h-[20px] border border-black rounded-full"
                                         ></button>
                                     }
-                                    <p onClick={() => setUnggulanBupati((prev) => !prev)} className={`cursor-pointer ${UnggulanBupati && 'text-emerald-500'}`}>Program Bupati</p>
+                                    <p onClick={() => setUnggulanBupati((prev) => !prev)} className={`cursor-pointer ${UnggulanBupati && 'text-emerald-500'}`}>Program Walikota</p>
                                 </div>
                                 <div className="flex flex-col items-center">
                                     {HariKerja ?
@@ -1378,7 +1378,7 @@ export const FormEditPohon: React.FC<{
                                             className="w-[20px] h-[20px] border border-black rounded-full"
                                         ></button>
                                     }
-                                    <p onClick={() => setHariKerja((prev) => !prev)} className={`cursor-pointer ${HariKerja && 'text-emerald-500'}`}>100 Hari Kerja Bupati</p>
+                                    <p onClick={() => setHariKerja((prev) => !prev)} className={`cursor-pointer ${HariKerja && 'text-emerald-500'}`}>100 Hari Kerja Walikota</p>
                                 </div>
                                 <div className="flex flex-col items-center">
                                     {UnggulanPusat ?
@@ -1406,12 +1406,12 @@ export const FormEditPohon: React.FC<{
                                     render={({ field }) => (
                                         <div className="flex flex-col py-3">
                                             <label className="uppercase text-xs font-bold text-gray-700 mb-2">
-                                                Keterangan Program Unggulan Bupati :
+                                                Keterangan Program Unggulan Walikota :
                                             </label>
                                             <input
                                                 {...field}
                                                 className="border px-4 py-2 rounded-lg"
-                                                placeholder="Masukkan Keterangan Program Unggulan Bupati"
+                                                placeholder="Masukkan Keterangan Program Unggulan Walikota"
                                             />
                                         </div>
                                     )}
@@ -1424,12 +1424,12 @@ export const FormEditPohon: React.FC<{
                                     render={({ field }) => (
                                         <div className="flex flex-col py-3">
                                             <label className="uppercase text-xs font-bold text-gray-700 mb-2">
-                                                Keterangan 100 Hari Kerja Bupati :
+                                                Keterangan 100 Hari Kerja Walikota :
                                             </label>
                                             <input
                                                 {...field}
                                                 className="border px-4 py-2 rounded-lg"
-                                                placeholder="Masukkan Keterangan 100 Hari Kerja Bupati"
+                                                placeholder="Masukkan Keterangan 100 Hari Kerja Walikota"
                                             />
                                         </div>
                                     )}
