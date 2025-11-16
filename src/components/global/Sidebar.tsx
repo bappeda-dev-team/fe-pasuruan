@@ -783,7 +783,7 @@ export const Sidebar = ({ isZoomed, isOpen, toggleSidebar }: SidebarProps) => {
               <Link href="/inisiatif">
                 <li className={`flex items-center gap-x-2 cursor-pointer p-2 rounded-xl ${url === "/inisiatif" ? "bg-white text-gray-800" : "hover:bg-slate-500"}`}>
                   <TbTooltip className="text-xl" />
-                  <span className={`${!isOpen && 'hidden'} origin-left duration-200`}>Inisiatif Bupati</span>
+                  <span className={`${!isOpen && 'hidden'} origin-left duration-200`}>Inisiatif Walikota</span>
                 </li>
               </Link>
             </div>
