@@ -13,9 +13,9 @@ interface ProgramKegiatan {
     jenis: string;
     tipe: string;
     program?: program[];
-    kegiatan?: kegiatan[];
+    kegiatan?: string;
     urusan?: urusan[];
-    bidang_urusan?: bidangUrusan[];
+    bidang_urusan?: bidangUrusan;
     kode?: string;
     indikator?: indikator[];
 }
@@ -53,11 +53,6 @@ interface target {
 interface program {
     kode_program: string;
     nama_program: string;
-    indikator: indikator[];
-}
-interface kegiatan {
-    kode_kegiatan: string;
-    nama_kegiatan: string;
     indikator: indikator[];
 }
 interface urusan {
@@ -144,41 +139,36 @@ export const PohonLaporan: React.FC<pohon> = ({ tema, show_all, set_show_all }) 
                             anggaran={tema.total_anggaran || tema.pagu_anggaran || tema.pagu || '0'}
                         />
                     </div>
+                    {(tema.program) &&
+                        <div className="mt-5">
+                            <ProgramKegiatan
+                                jenis={tema.jenis_pohon}
+                                tipe="non-cetak"
+                                program={tema.program}
+                            />
+                        </div>
+                    }
                     {tema.urusan_pokin &&
-                        <div className="mt-5">
-                            <ProgramKegiatan
-                                jenis={tema.jenis_pohon}
-                                tipe="non-cetak"
-                                urusan={tema.urusan_pokin}
-                            />
-                        </div>
+                        tema.urusan_pokin.map((u: any, index: number) => (
+                            <div className="mt-5" key={index}>
+                                <ProgramKegiatan
+                                    jenis={tema.jenis_pohon}
+                                    tipe="non-cetak"
+                                    urusan={u}
+                                />
+                            </div>
+                        ))
                     }
-                    {tema.bidang_urusan_pokin &&
-                        <div className="mt-5">
-                            <ProgramKegiatan
-                                jenis={tema.jenis_pohon}
-                                tipe="non-cetak"
-                                bidang_urusan={tema.bidang_urusan_pokin}
-                            />
-                        </div>
-                    }
-                    {(tema.program_pokin) &&
-                        <div className="mt-5">
-                            <ProgramKegiatan
-                                jenis={tema.jenis_pohon}
-                                tipe="non-cetak"
-                                program={tema.program_pokin}
-                            />
-                        </div>
-                    }
-                    {(tema.kegiatan_pokin) &&
-                        <div className="mt-5">
-                            <ProgramKegiatan
-                                jenis={tema.jenis_pohon}
-                                tipe="non-cetak"
-                                kegiatan={tema.kegiatan_pokin}
-                            />
-                        </div>
+                    {tema.bidang_urusan &&
+                        tema.bidang_urusan.map((bu: any, index: number) => (
+                            <div className="mt-5" key={index}>
+                                <ProgramKegiatan
+                                    jenis={tema.jenis_pohon}
+                                    tipe="non-cetak"
+                                    bidang_urusan={bu}
+                                />
+                            </div>
+                        ))
                     }
                 </div>
                 {/* BUTTON ACTION TAMPILKAN DAN PELAKSANA*/}
@@ -390,39 +380,50 @@ export const ProgramKegiatan: React.FC<ProgramKegiatan> = ({ jenis, tipe, urusan
                             ${jenis === 'Operational' && 'border-b border-green-500 bg-white'}  
                             ${jenis === 'Operational N' && 'border border-green-500 bg-white'}  
                         `}>
-                            {(jenis === 'Strategic' || jenis === 'Strategic Pemda') && 'Bidang Urusan'}
-                            {(jenis === 'Tactical' || jenis === 'Tactical Pemda') && 'Program'}
-                            {(jenis === 'Operational' || jenis === 'Operational Pemda' || jenis === 'Operational N') && 'Kegiatan'}
-                            {jenis === 'Tematik' && 'Urusan'}
-                            {(jenis === 'Sub Tematik' || jenis === "Sub Sub Tematik" || jenis === "Super Sub Tematik") && 'Bidang Urusan'}
+                            {urusan && "Urusan"}
+                            {bidang_urusan && "Bidang Urusan"}
+                            {program && "Program"}
+                            {kegiatan && "Kegiatan"}
                         </td>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td className={`flex flex-col gap-4 min-w-[300px] px-4 py-3 bg-white border-x border-b border-black rounded-b-lg
-                            ${(jenis === 'Strategic Pemda' || jenis === 'Tactical Pemda' || jenis === 'Operational Pemda') && 'border-x border-b border-black rounded-b-lg'}    
-                            ${(jenis === 'Strategic' || jenis === 'Tactical' || jenis === 'Operational') && 'rounded-b-lg'}
+                        <td className={`flex flex-col gap-4 min-w-[300px] px-4 py-3 bg-white
+                            ${(
+                                jenis === 'Tematik' || jenis === "Sub Tematik" || jenis === "Sub Sub Tematik" || jenis === "Super Sub Tematik" ||
+                                jenis === 'Strategic Pemda' || jenis === 'Tactical Pemda' || jenis === 'Operational Pemda')
+                            && 'border-b border-x border-black rounded-b-lg'}    
+                            ${(jenis === 'Strategic' || jenis === 'Tactical' || jenis === 'Operational') && 'rounded-b-lg'}      
                             ${jenis === 'Operational N' && 'border-x border-b border-green-500 rounded-b-lg'}    
                         `}>
                             {(jenis === 'Operational' || jenis === 'Operational Pemda' || jenis === 'Operational N') &&
-                                kegiatan?.map((p: kegiatan, p_index) => (
-                                    <React.Fragment key={p_index}>
-                                        <p className='text-center'>{p.nama_kegiatan} ({p.kode_kegiatan})</p>
-                                    </React.Fragment>
-                                ))
+                                <React.Fragment>
+                                    <p className='text-center'>{kegiatan} ({kode})</p>
+                                    {tipe === 'non-cetak' &&
+                                        <ButtonGreenBorder
+                                            className='flex items-center gap-1'
+                                            onClick={() => handleModalIndikator(indikator ? indikator : [], `${kegiatan} - ${kode}`)}
+                                        >
+                                            <TbEye />
+                                            Tampilkan indikator
+                                        </ButtonGreenBorder>
+                                    }
+                                </React.Fragment>
                             }
-                            {(jenis === "Tactical" || jenis === "Tactical Pemda") &&
+                            {(jenis === "Strategic" || jenis === "Strategic Pemda" || jenis === "Tactical" || jenis === "Tactical Pemda") &&
                                 program?.map((p: program, p_index) => (
                                     <React.Fragment key={p_index}>
                                         <p className='text-center'>{p.nama_program} ({p.kode_program})</p>
-                                    </React.Fragment>
-                                ))
-                            }
-                            {(jenis === "Strategic" || jenis === "Strategic Pemda") &&
-                                bidang_urusan?.map((p: bidangUrusan, p_index) => (
-                                    <React.Fragment key={p_index}>
-                                        <p className='text-center'>{p.nama_bidang_urusan} ({p.kode_bidang_urusan})</p>
+                                        {tipe === 'non-cetak' &&
+                                            <ButtonGreenBorder
+                                                className='flex items-center gap-1'
+                                                onClick={() => handleModalIndikator(p.indikator ? p.indikator : [], `${p.nama_program} - (${p.kode_program})`)}
+                                            >
+                                                <TbEye />
+                                                Tampilkan indikator
+                                            </ButtonGreenBorder>
+                                        }
                                     </React.Fragment>
                                 ))
                             }
@@ -430,33 +431,11 @@ export const ProgramKegiatan: React.FC<ProgramKegiatan> = ({ jenis, tipe, urusan
                                 urusan?.map((p: urusan, p_index) => (
                                     <React.Fragment key={p_index}>
                                         <p className='text-center'>{p.nama_urusan} ({p.kode_urusan})</p>
-                                        {/* {tipe === 'non-cetak' &&
-                                            <ButtonGreenBorder
-                                                className='flex items-center gap-1'
-                                                onClick={() => handleModalIndikator(p.indikator ? p.indikator : [], `${p.nama_program} - (${p.kode_program})`)}
-                                            >
-                                                <TbEye />
-                                                Tampilkan indikator
-                                            </ButtonGreenBorder>
-                                        } */}
                                     </React.Fragment>
                                 ))
                             }
-                            {(jenis === "Sub Tematik" || jenis === "Sub Sub Tematik" || jenis === "Super Sub Tematik") &&
-                                bidang_urusan?.map((p: bidangUrusan, p_index) => (
-                                    <React.Fragment key={p_index}>
-                                        <p className='text-center'>{p.nama_bidang_urusan} ({p.kode_bidang_urusan})</p>
-                                        {/* {tipe === 'non-cetak' &&
-                                            <ButtonGreenBorder
-                                                className='flex items-center gap-1'
-                                                onClick={() => handleModalIndikator(p.indikator ? p.indikator : [], `${p.nama_program} - (${p.kode_program})`)}
-                                            >
-                                                <TbEye />
-                                                Tampilkan indikator
-                                            </ButtonGreenBorder>
-                                        } */}
-                                    </React.Fragment>
-                                ))
+                            {bidang_urusan &&
+                                <p className='text-center'>{bidang_urusan?.nama_bidang_urusan} ({bidang_urusan?.kode_bidang_urusan})</p>
                             }
                         </td>
                     </tr>
@@ -762,7 +741,7 @@ export const TablePelaksana: React.FC<TablePelaksana> = ({ jenis, pelaksana, tip
                                             {i.nama_indikator || "-"}
                                         </td>
                                     </tr>
-                                    {i.targets.map((t: target, t_index: number) => (
+                                    {i.targets?.map((t: target, t_index: number) => (
                                         <tr key={t_index}>
                                             <td
                                                 className={`min-w-[100px] border px-2 py-1 bg-white text-start
@@ -872,6 +851,17 @@ export const TablePelaksana: React.FC<TablePelaksana> = ({ jenis, pelaksana, tip
                         </tr>
                     </tbody>
                 </table>
+                {item.kode_kegiatan &&
+                    <div className="mt-2 mb-3">
+                        <ProgramKegiatan
+                            jenis={jenis}
+                            tipe='non-cetak'
+                            kegiatan={item.nama_kegiatan}
+                            kode={item.kode_kegiatan}
+                            indikator={item.indikator_kegiatan}
+                        />
+                    </div>
+                }
                 <ModalIndikator
                     isOpen={ModalCekIndikator}
                     data={DataIndikator}
