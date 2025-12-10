@@ -9,10 +9,8 @@ import {
   TbBuildingEstate, TbFileChart, TbFileDots, TbFileCode, TbFileCode2, TbUsers,
   TbUser, TbHexagonLetterR, TbBinaryTree2, TbTarget, TbMapPin, TbChartBar, TbCalendarShare,
   TbCalendar, TbHexagonLetterV, TbHexagonLetterM, TbClipboardText, TbZoomExclamation,
-  TbListDetails, TbAlertTriangle,
+  TbListDetails, TbAlertTriangle, TbBuildingCottage, TbCalendarStar, TbListTree,
   TbDatabasePlus, TbCalendarPlus, TbDeviceImacDollar, TbFocus2, TbHexagonLetterC, TbHexagonLetterO, TbHexagonLetterI,
-  TbBuildingCottage,
-  TbCalendarStar
 } from "react-icons/tb";
 import Image from 'next/image';
 import { usePathname, useParams } from 'next/navigation';
@@ -218,6 +216,7 @@ export const Sidebar = ({ isZoomed, isOpen, toggleSidebar }: SidebarProps) => {
       url === "/rencanakinerja-kak" ||
       url === `/laporanrincianbelanja` ||
       url === `/laporantaggingpohon` ||
+      url === `/controlpokin` ||
       url === `/laporancascadingpemda` ||
       url === "/laporancascadingopd"
     ) {
@@ -471,7 +470,7 @@ export const Sidebar = ({ isZoomed, isOpen, toggleSidebar }: SidebarProps) => {
                     </li>
                   </Link>
                   {/* LABEL TEMATIK (CSF, Outcome, intermediate) */}
-                  <li
+                  {/* <li
                     className={`flex justify-between items-center font-medium gap-x-2 cursor-pointer p-2 rounded-xl hover:bg-slate-500 transition-all duration-300 ease-in-out`}
                     onClick={() => setTematikKota(TematikKota ? false : true)}
                   >
@@ -480,7 +479,7 @@ export const Sidebar = ({ isZoomed, isOpen, toggleSidebar }: SidebarProps) => {
                       <span className={`${!isOpen && 'hidden'} origin-left duration-200`}>Isu Stategis</span>
                     </div>
                     <TbChevronRight className={`transition-all duration-200 ease-in-out ${TematikKota ? "rotate-90" : ""}`} />
-                  </li>
+                  </li> */}
                   {/* SUB MENU TEMATIK (CSF, Outcome, Intermediate) */}
                   <div className={`transition-all duration-300 ease-in-out ${TematikKota ? 'px-3 py-2 flex flex-col border-l-2 border-white rounded-b-xl ml-2  max-h-screen opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
                     <Link href="/CSF">
@@ -784,7 +783,7 @@ export const Sidebar = ({ isZoomed, isOpen, toggleSidebar }: SidebarProps) => {
               <Link href="/inisiatif">
                 <li className={`flex items-center gap-x-2 cursor-pointer p-2 rounded-xl ${url === "/inisiatif" ? "bg-white text-gray-800" : "hover:bg-slate-500"}`}>
                   <TbTooltip className="text-xl" />
-                  <span className={`${!isOpen && 'hidden'} origin-left duration-200`}>Inisiatif Bupati</span>
+                  <span className={`${!isOpen && 'hidden'} origin-left duration-200`}>Inisiatif Walikota</span>
                 </li>
               </Link>
             </div>
@@ -836,6 +835,12 @@ export const Sidebar = ({ isZoomed, isOpen, toggleSidebar }: SidebarProps) => {
               <li className={`flex items-center gap-x-2 text-sm cursor-pointer p-2 rounded-xl ${url === "/listopd" ? "bg-white text-gray-800" : "hover:bg-slate-500"}`}>
                 <TbListDetails className="text-xl" />
                 <span className={`${!isOpen && 'hidden'} origin-left duration-200`}>List OPD di Tematik</span>
+              </li>
+            </Link>
+            <Link href="/controlpokin">
+              <li className={`flex items-center gap-x-2 text-sm cursor-pointer p-2 rounded-xl ${url === "/controlpokin" ? "bg-white text-gray-800" : "hover:bg-slate-500"}`}>
+                <TbListTree className="text-xl" />
+                <span className={`${!isOpen && 'hidden'} origin-left duration-200`}>Control Pokin</span>
               </li>
             </Link>
             {/* LABEL LAPORAN REVIEW */}

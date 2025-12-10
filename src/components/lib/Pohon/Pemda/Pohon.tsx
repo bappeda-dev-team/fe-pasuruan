@@ -526,7 +526,10 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                                         </button>
                                                         <ButtonBlack
                                                             className='flex justify-center items-center gap-1'
-                                                            onClick={() => setIsClone(true)}
+                                                            onClick={() => {
+                                                                AlertNotification("Fitur dalam perbaikan", "", "warning", 3000);
+                                                            }}
+                                                        // onClick={() => setIsClone(true)}
                                                         >
                                                             <TbCopy />
                                                             Clone
@@ -755,11 +758,11 @@ export const TablePohon = (props: any) => {
                         </td>
                     </tr>
                     {indikator ?
-                            indikator.map((data: any, index: number) => (
-                                <React.Fragment key={data.id_indikator}>
-                                    <tr>
-                                        <td
-                                            className={`min-w-[100px] border px-2 py-3 bg-white text-start
+                        indikator.map((data: any, index: number) => (
+                            <React.Fragment key={data.id_indikator}>
+                                <tr>
+                                    <td
+                                        className={`min-w-[100px] border px-2 py-3 bg-white text-start
                                         ${jenis === "Tematik" && "border-black"}
                                         ${jenis === "Sub Tematik" && "border-black"}
                                         ${jenis === "Sub Sub Tematik" && "border-black"}
@@ -771,72 +774,72 @@ export const TablePohon = (props: any) => {
                                         ${jenis === "Tactical Pemda" && "border-black"}
                                         ${jenis === "Operational Pemda" && "border-black"}
                                     `}
+                                    >
+                                        {indikator.length > 1 ?
+                                            <p>Indikator {index + 1}</p>
+                                            :
+                                            <p>Indikator</p>
+                                        }
+                                    </td>
+                                    <td
+                                        className={`min-w-[300px] border px-2 py-3 bg-white text-start
+                                        ${jenis === "Tematik" && "border-black"}
+                                        ${jenis === "Sub Tematik" && "border-black"}
+                                        ${jenis === "Sub Sub Tematik" && "border-black"}
+                                        ${jenis === "Super Sub Tematik" && "border-black"}
+                                        ${jenis === "Strategic" && "border-red-700"}
+                                        ${jenis === "Tactical" && "border-blue-500"}
+                                        ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
+                                        ${jenis === "Strategic Pemda" && "border-black"}
+                                        ${jenis === "Tactical Pemda" && "border-black"}
+                                        ${jenis === "Operational Pemda" && "border-black"}
+                                    `}
+                                    >
+                                        {data.nama_indikator ? data.nama_indikator : "-"}
+                                    </td>
+                                </tr>
+                                {data.targets.map((data: any) => (
+                                    <tr key={data.id_target}>
+                                        <td
+                                            className={`min-w-[100px] border px-2 py-3 bg-white text-start
+                                            ${jenis === "Tematik" && "border-black"}
+                                            ${jenis === "Sub Tematik" && "border-black"}
+                                            ${jenis === "Sub Sub Tematik" && "border-black"}
+                                            ${jenis === "Super Sub Tematik" && "border-black"}
+                                            ${jenis === "Strategic" && "border-red-700"}
+                                            ${jenis === "Tactical" && "border-blue-500"}
+                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
+                                            ${jenis === "Strategic Pemda" && "border-black"}
+                                            ${jenis === "Tactical Pemda" && "border-black"}
+                                            ${jenis === "Operational Pemda" && "border-black"}    
+                                        `}
                                         >
-                                            {indikator.length > 1 ? 
-                                                <p>Indikator {index + 1}</p>
+                                            {indikator.length > 1 ?
+                                                <p>Target/Satuan {index + 1}</p>
                                                 :
-                                                <p>Indikator</p>
+                                                <p>Target/Satuan</p>
                                             }
                                         </td>
                                         <td
                                             className={`min-w-[300px] border px-2 py-3 bg-white text-start
-                                        ${jenis === "Tematik" && "border-black"}
-                                        ${jenis === "Sub Tematik" && "border-black"}
-                                        ${jenis === "Sub Sub Tematik" && "border-black"}
-                                        ${jenis === "Super Sub Tematik" && "border-black"}
-                                        ${jenis === "Strategic" && "border-red-700"}
-                                        ${jenis === "Tactical" && "border-blue-500"}
-                                        ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
-                                        ${jenis === "Strategic Pemda" && "border-black"}
-                                        ${jenis === "Tactical Pemda" && "border-black"}
-                                        ${jenis === "Operational Pemda" && "border-black"}
-                                    `}
+                                            ${jenis === "Tematik" && "border-black"}
+                                            ${jenis === "Sub Tematik" && "border-black"}
+                                            ${jenis === "Sub Sub Tematik" && "border-black"}
+                                            ${jenis === "Super Sub Tematik" && "border-black"}
+                                            ${jenis === "Strategic" && "border-red-700"}
+                                            ${jenis === "Tactical" && "border-blue-500"}
+                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
+                                            ${jenis === "Strategic Pemda" && "border-black"}
+                                            ${jenis === "Tactical Pemda" && "border-black"}
+                                            ${jenis === "Operational Pemda" && "border-black"}    
+                                        `}
                                         >
-                                            {data.nama_indikator ? data.nama_indikator : "-"}
+                                            {data.target ? data.target : "-"} / {data.satuan ? data.satuan : "-"}
                                         </td>
                                     </tr>
-                                    {data.targets.map((data: any) => (
-                                        <tr key={data.id_target}>
-                                            <td
-                                                className={`min-w-[100px] border px-2 py-3 bg-white text-start
-                                            ${jenis === "Tematik" && "border-black"}
-                                            ${jenis === "Sub Tematik" && "border-black"}
-                                            ${jenis === "Sub Sub Tematik" && "border-black"}
-                                            ${jenis === "Super Sub Tematik" && "border-black"}
-                                            ${jenis === "Strategic" && "border-red-700"}
-                                            ${jenis === "Tactical" && "border-blue-500"}
-                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
-                                            ${jenis === "Strategic Pemda" && "border-black"}
-                                            ${jenis === "Tactical Pemda" && "border-black"}
-                                            ${jenis === "Operational Pemda" && "border-black"}    
-                                        `}
-                                            >
-                                                {indikator.length > 1 ? 
-                                                    <p>Target/Satuan {index + 1}</p>
-                                                    :
-                                                    <p>Target/Satuan</p>
-                                                }
-                                            </td>
-                                            <td
-                                                className={`min-w-[300px] border px-2 py-3 bg-white text-start
-                                            ${jenis === "Tematik" && "border-black"}
-                                            ${jenis === "Sub Tematik" && "border-black"}
-                                            ${jenis === "Sub Sub Tematik" && "border-black"}
-                                            ${jenis === "Super Sub Tematik" && "border-black"}
-                                            ${jenis === "Strategic" && "border-red-700"}
-                                            ${jenis === "Tactical" && "border-blue-500"}
-                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
-                                            ${jenis === "Strategic Pemda" && "border-black"}
-                                            ${jenis === "Tactical Pemda" && "border-black"}
-                                            ${jenis === "Operational Pemda" && "border-black"}    
-                                        `}
-                                            >
-                                                {data.target ? data.target : "-"} / {data.satuan ? data.satuan : "-"}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </React.Fragment>
-                            ))
+                                ))}
+                            </React.Fragment>
+                        ))
                         :
                         <>
                             <tr>
@@ -1086,7 +1089,7 @@ export const ambilPohonName = (jenis: string): string => {
 export const CSF = (data: any) => {
     return (
         <>
-            {data.data == null ? 
+            {data.data == null ?
                 <>
                     <tr>
                         <td

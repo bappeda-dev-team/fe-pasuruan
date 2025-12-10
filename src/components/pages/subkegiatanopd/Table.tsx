@@ -1,6 +1,6 @@
 'use client'
 
-import { ButtonRed, ButtonSkyBorder } from "@/components/global/Button";
+import { ButtonRed, ButtonSkyBorder, ButtonGreenBorder } from "@/components/global/Button";
 import { useEffect, useState } from "react";
 import { LoadingClip } from "@/components/global/Loading";
 import { getToken } from "@/components/lib/Cookie";
@@ -27,6 +27,7 @@ const Table: React.FC<table> = ({ tahun, opd }) => {
     const [Loading, setLoading] = useState<boolean | null>(null);
     const [Error, setError] = useState<boolean | null>(null);
     const [DataNull, setDataNull] = useState<boolean | null>(null);
+    const [JenisModal, setJenisModal] = useState<"opd" | "all">("all");
     const token = getToken();
 
     // MODAL & TRIGGER
@@ -64,10 +65,20 @@ const Table: React.FC<table> = ({ tahun, opd }) => {
                 setLoading(false);
             }
         }
-        if(tahun && opd){
+        if (tahun && opd) {
             fetchSubKegiatan();
         }
     }, [opd, tahun, fetchTrigger, token]);
+
+    const handleModal = (jenis: "opd" | "all") => {
+        if (ModalTambah) {
+            setJenisModal("opd");
+            setModalTambah(false);
+        } else {
+            setJenisModal(jenis);
+            setModalTambah(true);
+        }
+    }
 
     const hapusSubKegiatan = async (id: any) => {
         const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -105,13 +116,22 @@ const Table: React.FC<table> = ({ tahun, opd }) => {
 
     return (
         <>
-            <ButtonSkyBorder 
-                className="m-2 flex items-center gap-1"
-                onClick={() => setModalTambah(true)}
-            >
-                <TbCirclePlus />
-                Tambah Sub Kegiatan OPD
-            </ButtonSkyBorder>
+            <div className="flex flex-wrap items-center gap-1">
+                <ButtonSkyBorder
+                    className="m-2 flex items-center gap-1"
+                    onClick={() => handleModal("opd")}
+                >
+                    <TbCirclePlus />
+                    Tambah Sub Kegiatan OPD
+                </ButtonSkyBorder>
+                <ButtonGreenBorder
+                    className="m-2 flex items-center gap-1"
+                    onClick={() => handleModal("all")}
+                >
+                    <TbCirclePlus />
+                    Tambah Sub Kegiatan Baru
+                </ButtonGreenBorder>
+            </div>
             <div className="overflow-auto m-2 rounded-t-xl border">
                 <table className="w-full">
                     <thead>
@@ -157,10 +177,11 @@ const Table: React.FC<table> = ({ tahun, opd }) => {
                         }
                     </tbody>
                 </table>
-                <ModalSubKegiatanOpd 
+                <ModalSubKegiatanOpd
                     kode_opd={opd}
                     tahun={String(tahun)}
                     isOpen={ModalTambah}
+                    jenis={JenisModal}
                     onClose={() => setModalTambah(false)}
                     onSuccess={() => setfetchTrigger((prev) => !prev)}
                 />
