@@ -165,12 +165,20 @@ const Sakip: React.FC<id> = ({id}) => {
                                                 <td className="px-2 py-2 border bg-slate-100">Indikator Kinerja ke {index + 1}</td>
                                                 <td className="px-2 py-2 border bg-slate-100">{i.nama_indikator}</td>
                                             </tr>
-                                            {i.targets.map((t: targets) => (
-                                                <tr key={t.id_target}>
-                                                    <td className="px-2 py-2 border">Target Indikator Kinerja ke {index + 1}</td>
-                                                    <td className="px-2 py-2 border">{t.target} {t.satuan}</td>
-                                                </tr>
-                                            ))}
+                                            {i.targets ? 
+                                                i.targets?.map((t: targets) => (
+                                                    <tr key={t.id_target}>
+                                                        <td className="px-2 py-2 border">Target Indikator Kinerja ke {index + 1}</td>
+                                                        <td className="px-2 py-2 border">{t.target} {t.satuan}</td>
+                                                    </tr>
+                                                ))
+
+                                            :
+                                                    <tr>
+                                                        <td className="px-2 py-2 border">Target Indikator Kinerja ke {index + 1}</td>
+                                                        <td className="px-2 py-2 border">-</td>
+                                                    </tr>
+                                            }
                                             <tr>
                                                 <td className="px-2 py-2 border">Manual IK </td>
                                                 <td className="px-2 py-2 border">
