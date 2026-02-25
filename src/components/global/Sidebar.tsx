@@ -10,7 +10,8 @@ import {
   TbUser, TbHexagonLetterR, TbBinaryTree2, TbTarget, TbMapPin, TbChartBar, TbCalendarShare,
   TbCalendar, TbHexagonLetterV, TbHexagonLetterM, TbClipboardText, TbZoomExclamation,
   TbListDetails, TbAlertTriangle, TbBuildingCottage, TbCalendarStar, TbListTree,
-  TbDatabasePlus, TbCalendarPlus, TbDeviceImacDollar, TbFocus2, TbHexagonLetterC, TbHexagonLetterO, TbHexagonLetterI,
+  TbDatabasePlus, TbCalendarPlus, TbDeviceImacDollar, TbFocus2, TbHexagonLetterC, 
+  TbHexagonLetterO, TbHexagonLetterI, TbClipboardTypography
 } from "react-icons/tb";
 import Image from 'next/image';
 import { usePathname, useParams } from 'next/navigation';
@@ -907,6 +908,12 @@ export const Sidebar = ({ isZoomed, isOpen, toggleSidebar }: SidebarProps) => {
                 </li>
               </Link>
             </div>
+            <Link href="/perjanjian-kinerja">
+              <li className={`flex items-center gap-x-2 text-sm cursor-pointer p-2 rounded-xl ${url === "/perjanjian-kinerja" ? "bg-white text-gray-800" : "hover:bg-slate-500"}`}>
+                <TbClipboardTypography className="text-xl" />
+                <span className={`${!isOpen && 'hidden'} origin-left duration-200`}>Perjanjian Kinerja</span>
+              </li>
+            </Link>
             <Link href="#">
               <li className={`flex items-center gap-x-2 text-sm cursor-pointer p-2 rounded-xl ${url === "/rencanakinerja-kak" ? "bg-white text-gray-800" : "hover:bg-slate-500"}`}>
                 <TbChecklist className="text-xl" />
