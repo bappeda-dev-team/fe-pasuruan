@@ -10,7 +10,7 @@ import {
   TbUser, TbHexagonLetterR, TbBinaryTree2, TbTarget, TbMapPin, TbChartBar, TbCalendarShare,
   TbCalendar, TbHexagonLetterV, TbHexagonLetterM, TbClipboardText, TbZoomExclamation,
   TbListDetails, TbAlertTriangle, TbBuildingCottage, TbCalendarStar, TbListTree,
-  TbDatabasePlus, TbCalendarPlus, TbDeviceImacDollar, TbFocus2, TbHexagonLetterC, 
+  TbDatabasePlus, TbCalendarPlus, TbDeviceImacDollar, TbFocus2, TbHexagonLetterC,
   TbHexagonLetterO, TbHexagonLetterI, TbClipboardTypography
 } from "react-icons/tb";
 import Image from 'next/image';
@@ -81,6 +81,7 @@ export const Sidebar = ({ isZoomed, isOpen, toggleSidebar }: SidebarProps) => {
     //DATA MASTER OPD
     if (
       url === "/useropd" ||
+      url === "/jabatan-opd" ||
       url === "/subkegiatanopd"
     ) {
       setDataMaster(false);
@@ -355,12 +356,12 @@ export const Sidebar = ({ isZoomed, isOpen, toggleSidebar }: SidebarProps) => {
                   <span className={`${!isOpen && 'hidden'} origin-left duration-200`}>Master User</span>
                 </li>
               </Link>
-              <Link href="/DataMaster/masterjabatan">
+              {/* <Link href="/DataMaster/masterjabatan">
                 <li className={`flex items-center gap-x-2 cursor-pointer p-2 rounded-xl transition-all duration-300 ease-in-out ${url === "/DataMaster/masterjabatan" ? "bg-white text-gray-800" : "hover:bg-slate-500"}`}>
                   <TbBadges className="text-xl" />
                   <span className={`${!isOpen && 'hidden'} origin-left duration-200`}>Master Jabatan</span>
                 </li>
-              </Link>
+              </Link> */}
               <Link href="/DataMaster/masterusulan">
                 <li className={`flex items-center gap-x-2 cursor-pointer p-2 rounded-xl transition-all duration-300 ease-in-out ${url === "/DataMaster/masterusulan" ? "bg-white text-gray-800" : "hover:bg-slate-500"}`}>
                   <TbApps className="text-xl" />
@@ -431,6 +432,12 @@ export const Sidebar = ({ isZoomed, isOpen, toggleSidebar }: SidebarProps) => {
           {/* SUB MENU DATA MASTER OPD */}
           {(User?.roles == 'super_admin' || User?.roles == 'admin_opd' || User?.roles == 'reviewer') &&
             <div className={`transition-all duration-300 ease-in-out ${DataMasterOpd ? 'px-3 py-2 flex flex-col border-l-2 border-white rounded-b-xl ml-2  max-h-screen opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+              <Link href="/jabatan-opd">
+                <li className={`flex items-center gap-x-2 cursor-pointer p-2 rounded-xl transition-all duration-300 ease-in-out ${url === "/jabatan-opd" ? "bg-white text-gray-800" : "hover:bg-slate-500"}`}>
+                  <TbBadges className="text-xl" />
+                  <span className={`${!isOpen && 'hidden'} origin-left duration-200`}>Master Jabatan</span>
+                </li>
+              </Link>
               <Link href="/useropd">
                 <li className={`flex items-center gap-x-2 cursor-pointer p-2 rounded-xl ${(url === "/useropd" || url === "/useropd/tambah" || url === `/useropd/${id}`) ? "bg-white text-gray-800" : "hover:bg-slate-500"}`}>
                   <TbUser className="text-xl" />
