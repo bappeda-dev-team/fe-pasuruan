@@ -526,24 +526,26 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                                         </button>
                                                         <ButtonBlack
                                                             className='flex justify-center items-center gap-1'
-                                                            onClick={() => {
-                                                                AlertNotification("Fitur dalam perbaikan", "", "warning", 3000);
-                                                            }}
-                                                        // onClick={() => setIsClone(true)}
+                                                            // onClick={() => {
+                                                            //     AlertNotification("Fitur dalam perbaikan", "", "warning", 3000);
+                                                            // }}
+                                                            onClick={() => setIsClone(true)}
                                                         >
                                                             <TbCopy />
                                                             Clone
                                                         </ButtonBlack>
-                                                        <ModalClone
-                                                            jenis="pemda"
-                                                            isOpen={IsClone}
-                                                            onClose={() => setIsClone(false)}
-                                                            nama_pohon={tema.tema}
-                                                            tahun={tahun || "0"}
-                                                            id={tema.id}
-                                                            kode_opd=''
-                                                            onSuccess={deleteTrigger}
-                                                        />
+                                                        {IsClone &&
+                                                            <ModalClone
+                                                                jenis="pemda"
+                                                                isOpen={IsClone}
+                                                                onClose={() => setIsClone(false)}
+                                                                nama_pohon={tema.tema}
+                                                                tahun={tahun || "0"}
+                                                                id={tema.id}
+                                                                kode_opd=''
+                                                                onSuccess={deleteTrigger}
+                                                            />
+                                                        }
                                                     </>
                                                 }
                                             </React.Fragment>

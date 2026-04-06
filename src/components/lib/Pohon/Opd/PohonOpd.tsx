@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
     TbPrinter, TbLayersLinked, TbBookmarkPlus, TbCheck, TbCircleLetterXFilled,
     TbCirclePlus, TbHourglass, TbPencil, TbTrash, TbEye, TbEyeClosed, TbArrowAutofitWidth,
-    TbDeviceTabletSearch, TbZoom, TbCircleCheckFilled
+    TbDeviceTabletSearch, TbZoom, TbCircleCheckFilled, TbArrowGuide
 } from 'react-icons/tb';
 import { ButtonSky, ButtonSkyBorder, ButtonRedBorder, ButtonGreenBorder, ButtonBlackBorder } from '@/components/global/Button';
 import { AlertNotification, AlertQuestion } from '@/components/global/Alert';
@@ -13,6 +13,8 @@ import { ModalPindahPohonOpd } from '@/components/pages/Pohon/ModalPindahPohonOp
 import { ModalReview } from '@/components/pages/Pohon/ModalReview';
 import { ModalCetak } from '@/components/pages/Pohon/ModalCetak';
 import { LoadingClip } from '@/components/global/Loading';
+import { useBrandingContext } from '@/context/BrandingContext';
+import { FormAmbilPohonOpd } from './FormAmbilPohonOpd';
 
 interface pohon {
     tema: any;
@@ -64,8 +66,11 @@ interface Review {
 
 export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, show_all, show_detail, set_show_all }) => {
 
+    const { branding } = useBrandingContext();
+
     const [childPohons, setChildPohons] = useState(tema.childs || []);
     const [formList, setFormList] = useState<number[]>([]); // List of form IDs
+    const [PutList, setPutList] = useState<number[]>([]); // List of form IDs
     const [CrossList, setCrossList] = useState<number[]>([]); // List of form IDs
     const [edit, setEdit] = useState<boolean>(false);
     const [DetailCross, setDetailCross] = useState<boolean>(false);
@@ -99,6 +104,9 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
     // Adds a new form entry
     const newChild = () => {
         setFormList([...formList, Date.now()]); // Using unique IDs
+    };
+    const newPutChild = () => {
+        setPutList([...PutList, Date.now()]); // Using unique IDs
     };
     const handleCross = () => {
         setCross((prev) => !prev);
@@ -575,12 +583,23 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
                                     {/* BUTTON TAMBAH POKIN OPD SUPER ADMIN, ADMIN OPD, ASN LEVEL 1 & 2 */}
                                     {(User?.roles == 'super_admin' || User?.roles == 'admin_opd' || User?.roles == 'level_1' || User?.roles == 'level_2') &&
                                         Show &&
-                                        <ButtonGreenBorder className={`px-3 bg-white flex justify-center items-center py-1 bg-gradient-to-r rounded-lg`}
-                                            onClick={newChild}
-                                        >
-                                            <TbCirclePlus className='mr-1' />
-                                            {newChildButtonName(tema.jenis_pohon)}
-                                        </ButtonGreenBorder>
+                                        <>
+                                            {/* AMBIL POHON MULAI DARI STRATEGIC DARI OPD */}
+                                            {(tema.jenis_pohon === "Strategic Pemda" || tema.jenis_pohon === "Tactical Pemda" || tema.jenis_pohon === "Operational Pemda") &&
+                                                <ButtonGreenBorder className={`px-3 bg-white flex justify-center items-center py-1 bg-gradient-to-r border-2 border-[#00A607] hover:bg-[#00A607] text-[#00A607] hover:text-white rounded-lg`}
+                                                    onClick={newPutChild}
+                                                >
+                                                    <TbArrowGuide className='mr-1' />
+                                                    Ambil (Clone)
+                                                </ButtonGreenBorder>
+                                            }
+                                            <ButtonGreenBorder className={`px-3 bg-white flex justify-center items-center py-1 bg-gradient-to-r rounded-lg`}
+                                                onClick={newChild}
+                                            >
+                                                <TbCirclePlus className='mr-1' />
+                                                {newChildButtonName(tema.jenis_pohon)}
+                                            </ButtonGreenBorder>
+                                        </>
                                     }
                                     {/* BUTTON TAMBAH POKIN OPD ASN LEVEL 3 */}
                                     {(User?.roles == 'level_3' &&
@@ -641,6 +660,17 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
                                     deleteTrigger={deleteTrigger}
                                     fetchTrigger={fetchTrigger}
                                 />
+                            ))}
+                            {PutList.map((formId: number) => (
+                                <React.Fragment key={formId}>
+                                    <FormAmbilPohonOpd
+                                        level={tema.level_pohon}
+                                        parent={tema.id}
+                                        fetchTrigger={fetchTrigger}
+                                        tahun={branding?.tahun?.value || 0}
+                                        onCancel={() => setPutList(PutList.filter((id) => id !== formId))}
+                                    />
+                                </React.Fragment>
                             ))}
                         </ul>
                         <ModalCetak
@@ -795,18 +825,18 @@ export const TablePohon = (props: any) => {
     return (
         <div className='flex flex-col w-full'>
             <div className="flex flex-col w-full">
-            {/* TAGGING */}
-            {tagging &&
-                tagging.map((tg: Tagging, tag_index: number) => (
-                    <div key={tag_index} className="flex flex-col gap-1 w-full px-3 py-1 border border-yellow-400 rounded-lg bg-white mb-2">
-                        <div className='flex items-center gap-1'>
-                            <h1 className='text-emerald-500'><TbCircleCheckFilled /></h1>
-                            <h1 className='font-semibold'>{tg.nama_tagging || "-"}</h1>
+                {/* TAGGING */}
+                {tagging &&
+                    tagging.map((tg: Tagging, tag_index: number) => (
+                        <div key={tag_index} className="flex flex-col gap-1 w-full px-3 py-1 border border-yellow-400 rounded-lg bg-white mb-2">
+                            <div className='flex items-center gap-1'>
+                                <h1 className='text-emerald-500'><TbCircleCheckFilled /></h1>
+                                <h1 className='font-semibold'>{tg.nama_tagging || "-"}</h1>
+                            </div>
+                            <h1 className="p-1 text-slate-600 text-start">{tg.keterangan_tagging || ""}</h1>
                         </div>
-                        <h1 className="p-1 text-slate-600 text-start">{tg.keterangan_tagging || ""}</h1>
-                    </div>
-                ))
-            }
+                    ))
+                }
             </div>
             <table className='w-full'>
                 <tbody>
