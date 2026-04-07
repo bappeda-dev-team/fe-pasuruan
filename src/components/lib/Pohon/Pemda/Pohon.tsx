@@ -326,7 +326,7 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                                                             ${tema.jenis_pohon === "Operational Pemda" && "border border-black"}
                                                                             ${tema.jenis_pohon === "Strategic" && "border-r border-b bg-yellow-100 border-red-700"}
                                                                             ${tema.jenis_pohon === "Tactical" && "border-r border-b bg-yellow-100 border-blue-500"}
-                                                                            ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && "border-r border-b bg-yellow-100 border-green-500"}    
+                                                                            ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && "border-r border-b bg-yellow-100 border-green-500"}
                                                                         `}
                                                                     >
                                                                         review
@@ -339,7 +339,7 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                                                             ${tema.jenis_pohon === "Operational Pemda" && "border border-black"}
                                                                             ${tema.jenis_pohon === "Strategic" && "border-b bg-yellow-100 border-red-700"}
                                                                             ${tema.jenis_pohon === "Tactical" && "border-b bg-yellow-100 border-blue-500"}
-                                                                            ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && "border-b bg-yellow-100 border-green-500"}    
+                                                                            ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && "border-b bg-yellow-100 border-green-500"}
                                                                         `}
                                                                     >
                                                                         <div className="flex items-start justify-between gap-1">
@@ -355,7 +355,7 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                                                             ${tema.jenis_pohon === "Operational Pemda" && "border border-black"}
                                                                             ${tema.jenis_pohon === "Strategic" && "border-l bg-yellow-100 border-red-700"}
                                                                             ${tema.jenis_pohon === "Tactical" && "border-l bg-yellow-100 border-blue-500"}
-                                                                            ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && "border-l bg-yellow-100 border-green-500"}    
+                                                                            ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && "border-l bg-yellow-100 border-green-500"}
                                                                         `}
                                                                     >
                                                                         <div className="flex items-center justify-center gap-1">
@@ -374,7 +374,7 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                                                             ${tema.jenis_pohon === "Operational Pemda" && "border border-black"}
                                                                             ${tema.jenis_pohon === "Strategic" && "border-r border-b bg-yellow-100 border-red-700"}
                                                                             ${tema.jenis_pohon === "Tactical" && "border-r border-b bg-yellow-100 border-blue-500"}
-                                                                            ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && "border-r border-b bg-yellow-100 border-green-500"}    
+                                                                            ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && "border-r border-b bg-yellow-100 border-green-500"}
                                                                         `}
                                                                     >
                                                                         Keterangan
@@ -387,7 +387,7 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                                                             ${tema.jenis_pohon === "Operational Pemda" && "border-b border-black"}
                                                                             ${tema.jenis_pohon === "Strategic" && "border-b bg-yellow-100 border-red-700"}
                                                                             ${tema.jenis_pohon === "Tactical" && "border-b bg-yellow-100 border-blue-500"}
-                                                                            ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && "border-b bg-yellow-100 border-green-500"}    
+                                                                            ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && "border-b bg-yellow-100 border-green-500"}
                                                                         `}
                                                                     >
                                                                         <p>
@@ -406,7 +406,7 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                                                             ${tema.jenis_pohon === "Operational Pemda" && "border border-black"}
                                                                             ${tema.jenis_pohon === "Strategic" && "border-b border-l bg-yellow-100 border-red-700"}
                                                                             ${tema.jenis_pohon === "Tactical" && "border-b border-l bg-yellow-100 border-blue-500"}
-                                                                            ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && "border-b border-l bg-yellow-100 border-green-500"}    
+                                                                            ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && "border-b border-l bg-yellow-100 border-green-500"}
                                                                         `}
                                                                     >
                                                                         <div className="flex items-center justify-center gap-1"
@@ -511,7 +511,7 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                                                     'border-green-500 text-green-500 hover:bg-green-500 hover:text-white'
                                                                     :
                                                                     'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
-                                                                }    
+                                                                }
                                                     `}
                                                             onClick={() => {
                                                                 AlertQuestion(`${tema.is_active === true ? 'NON AKTIFKAN' : 'AKTIFKAN'}`, `${tema.is_active === false ? 'Aktifkan tematik?' : 'non aktifkan tematik'}`, "question", `${tema.is_active === false ? 'Aktifkan' : 'Non Aktifkan'}`, "Batal").then((result) => {
@@ -588,7 +588,7 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                                     {/* TOMBOL ADD POHON SESUAI URUTAN AKARNYA */}
                                                     {tema.level_pohon !== 3 &&
                                                         <ButtonGreenBorder className={`px-3 bg-white flex justify-center items-center py-1 rounded-lg
-                                                ${(tema.jenis_pohon === 'Strategic' || tema.jenis_pohon === 'Strategic Pemda') && 'border-[#3b82f6] hover:bg-[#3b82f6] text-[#3b82f6] hover:text-white'}    
+                                                ${(tema.jenis_pohon === 'Strategic' || tema.jenis_pohon === 'Strategic Pemda') && 'border-[#3b82f6] hover:bg-[#3b82f6] text-[#3b82f6] hover:text-white'}
                                             `}
                                                             onClick={newChild}
                                                         >
@@ -813,7 +813,7 @@ export const TablePohon = (props: any) => {
                                             ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                             ${jenis === "Strategic Pemda" && "border-black"}
                                             ${jenis === "Tactical Pemda" && "border-black"}
-                                            ${jenis === "Operational Pemda" && "border-black"}    
+                                            ${jenis === "Operational Pemda" && "border-black"}
                                         `}
                                         >
                                             {indikator.length > 1 ?
@@ -833,7 +833,7 @@ export const TablePohon = (props: any) => {
                                             ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                             ${jenis === "Strategic Pemda" && "border-black"}
                                             ${jenis === "Tactical Pemda" && "border-black"}
-                                            ${jenis === "Operational Pemda" && "border-black"}    
+                                            ${jenis === "Operational Pemda" && "border-black"}
                                         `}
                                         >
                                             {data.target ? data.target : "-"} / {data.satuan ? data.satuan : "-"}
@@ -890,7 +890,7 @@ export const TablePohon = (props: any) => {
                                         ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                         ${jenis === "Strategic Pemda" && "border-black"}
                                         ${jenis === "Tactical Pemda" && "border-black"}
-                                        ${jenis === "Operational Pemda" && "border-black"}    
+                                        ${jenis === "Operational Pemda" && "border-black"}
                                     `}
                                 >
                                     Target/Satuan
@@ -906,7 +906,7 @@ export const TablePohon = (props: any) => {
                                         ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                         ${jenis === "Strategic Pemda" && "border-black"}
                                         ${jenis === "Tactical Pemda" && "border-black"}
-                                        ${jenis === "Operational Pemda" && "border-black"}    
+                                        ${jenis === "Operational Pemda" && "border-black"}
                                     `}
                                 >
                                     -
@@ -927,7 +927,7 @@ export const TablePohon = (props: any) => {
                                     ${jenis === "Tactical Pemda" && "border-black"}
                                     ${jenis === "Tactical" && "border-blue-500"}
                                     ${jenis === "Operational Pemda" && "border-black"}
-                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                 `}
                             >
                                 Perangkat Daerah
@@ -943,7 +943,7 @@ export const TablePohon = (props: any) => {
                                     ${jenis === "Tactical Pemda" && "border-black"}
                                     ${jenis === "Tactical" && "border-blue-500"}
                                     ${jenis === "Operational Pemda" && "border-black"}
-                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                 `}
                             >
                                 {opd ? opd : "-"}
@@ -962,7 +962,7 @@ export const TablePohon = (props: any) => {
                                 ${jenis === "Tactical Pemda" && "border-black"}
                                 ${jenis === "Tactical" && "border-blue-500"}
                                 ${jenis === "Operational Pemda" && "border-black"}
-                                ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                                ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                             `}
                         >
                             Keterangan
@@ -978,7 +978,7 @@ export const TablePohon = (props: any) => {
                                 ${jenis === "Tactical Pemda" && "border-black"}
                                 ${jenis === "Tactical" && "border-blue-500"}
                                 ${jenis === "Operational Pemda" && "border-black"}
-                                ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                                ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                             `}
                         >
                             {keterangan ? keterangan : "-"}
@@ -997,7 +997,7 @@ export const TablePohon = (props: any) => {
                                     ${jenis === "Tactical Pemda" && "border-black"}
                                     ${jenis === "Tactical" && "border-blue-500"}
                                     ${jenis === "Operational Pemda" && "border-black"}
-                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                 `}
                             >
                                 Status
@@ -1013,7 +1013,7 @@ export const TablePohon = (props: any) => {
                                     ${jenis === "Tactical Pemda" && "border-black"}
                                     ${jenis === "Tactical" && "border-blue-500"}
                                     ${jenis === "Operational Pemda" && "border-black"}
-                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                 `}
                             >
                                 {status === 'menunggu_disetujui' ? (

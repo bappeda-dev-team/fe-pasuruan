@@ -27,11 +27,10 @@ interface modal {
     onClose: () => void;
     onSuccess: () => void;
     jenis: string;
-    tematik: any;
     data?: any;
 }
 
-export const ModalCSF: React.FC<modal> = ({ isOpen, onClose, onSuccess, tematik, jenis, data }) => {
+export const ModalCSF: React.FC<modal> = ({ isOpen, onClose, onSuccess, jenis, data }) => {
 
     const {branding} = useBrandingContext();
     const tahun = branding?.tahun ? branding?.tahun.value : 0;
@@ -56,7 +55,7 @@ export const ModalCSF: React.FC<modal> = ({ isOpen, onClose, onSuccess, tematik,
         const formData = {
             //key : value
             ...(jenis === "edit" && { id: data.id }),
-            pohon_id: tematik.id,
+            pohon_id: data.pohon_id,
             pernyataan_kondisi_strategis: dataValue.pernyataan_kondisi_strategis,
             alasan_kondisi: dataValue.alasan_kondisi.map((a) => ({
                 alasan_kondisi_strategis: a.alasan_kondisi_strategis,
@@ -192,7 +191,7 @@ export const ModalCSF: React.FC<modal> = ({ isOpen, onClose, onSuccess, tematik,
                             >
                                 Kondisi Terukur Yang Diharapkan (TEMA) :
                             </label>
-                            <div className="border px-4 py-2 rounded-lg">{tematik.tema || "-"}</div>
+                            <div className="border px-4 py-2 rounded-lg">{data.tema || "-"}</div>
                         </div>
                         <div className="flex flex-col py-3">
                             <label
