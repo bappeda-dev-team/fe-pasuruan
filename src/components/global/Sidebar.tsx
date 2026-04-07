@@ -12,7 +12,7 @@ import {
   TbListDetails, TbAlertTriangle, TbBuildingCottage, TbCalendarStar, TbListTree,
   TbDatabasePlus, TbCalendarPlus, TbDeviceImacDollar, TbFocus2, TbHexagonLetterC,
   TbHexagonLetterO, TbHexagonLetterI, TbClipboardTypography, TbRubberStamp, TbFileCheck,
-  TbFileImport
+  TbFileImport, TbChartPie
 } from "react-icons/tb";
 import Image from 'next/image';
 import { usePathname, useParams } from 'next/navigation';
