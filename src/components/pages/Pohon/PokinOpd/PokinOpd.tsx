@@ -719,7 +719,8 @@ const PokinOpd = () => {
                                         </ButtonSkyBorder>
                                         <ButtonBlack
                                             className='flex flex-wrap items-center justify-center gap-1'
-                                            onClick={() => setClone(true)}
+                                            // onClick={() => setClone(true)}
+                                            onClick={() => AlertNotification("Dalam Pengembangan", "", "info", 2000)}
                                         >
                                             <TbCopy className='mr-1' />
                                             Clone Pohon Kinerja
