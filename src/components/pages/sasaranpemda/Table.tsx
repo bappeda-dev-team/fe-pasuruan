@@ -22,6 +22,7 @@ interface Indikator {
     id: string;
     indikator: string;
     rumus_perhitungan: string;
+    definisi_operational: string;
     sumber_data: string;
     target: Target[];
 }
@@ -250,10 +251,10 @@ const Table: React.FC<table> = ({id_periode, tahun_awal, tahun_akhir, jenis, tah
                                 className={`flex justify-between border items-center p-5 rounded-xl text-emerald-500 cursor-pointer border-emerald-500 hover:bg-emerald-500 hover:text-white ${isShown ? "bg-emerald-500 text-white" : ""}`}
                                 onClick={() => handleShow(data.tematik_id)}
                             >
-                                {isActiveTematik ? 
+                                {isActiveTematik ?
                                     <h1 className="font-semibold">Tematik - {data.nama_tematik} ({data.tahun})</h1>
                                     :
-                                    <h1 className="font-semibold text-red-400">Tematik - {data.nama_tematik} ({data.tahun}) NON AKTIF</h1>
+                                    <h1 className="font-semibold text-red-400">Tematik - {data.nama_tematik} ({data.tahun}) - NON AKTIF</h1>
                                 }
                                 <div className="flex items-center">
                                     <TbArrowBadgeDownFilled className={`transition-all duration-200 ease-in-out text-3xl ${isShown ? "" : "-rotate-90"}`} />
@@ -268,6 +269,7 @@ const Table: React.FC<table> = ({id_periode, tahun_awal, tahun_akhir, jenis, tah
                                                 <td rowSpan={2} className="border-r border-b px-6 py-3 min-w-[300px]">Strategic Pemda</td>
                                                 <td rowSpan={2} colSpan={2} className="border-r border-b px-6 py-3 min-w-[400px] text-center">Sasaran Pemda</td>
                                                 <td rowSpan={2} className="border-r border-b px-6 py-3 min-w-[200px]">Indikator</td>
+                                                <td rowSpan={2} className="border-r border-b px-6 py-3 min-w-[300px]">Definisi operational</td>
                                                 <td rowSpan={2} className="border-r border-b px-6 py-3 min-w-[300px]">Rumus Perhitungan</td>
                                                 <td rowSpan={2} className="border-r border-b px-6 py-3 min-w-[300px]">Sumber Data</td>
                                                 {tahun_list.map((item: any) => (
@@ -312,7 +314,7 @@ const Table: React.FC<table> = ({id_periode, tahun_awal, tahun_akhir, jenis, tah
                                                                     <p>{item.nama_subtematik} ({item.tahun})</p>
                                                                     <div className="flex flex-col justify-between gap-2 h-full">
                                                                         <p className="uppercase text-emerald-500 text-xs">{item.jenis_pohon}</p>
-                                                                        {item.is_active === false ? 
+                                                                        {item.is_active === false ?
                                                                                 <button
                                                                                     className="flex justify-between gap-1 rounded-full p-1 bg-red-500 text-white cursor-not-allowed"
                                                                                     onClick={() => handleModalNewSasaran(item.subtematik_id, item.nama_subtematik, item.jenis_pohon)}
@@ -383,6 +385,7 @@ const Table: React.FC<table> = ({id_periode, tahun_awal, tahun_akhir, jenis, tah
                                                                             s.indikator.map((i: Indikator) => (
                                                                                 <tr key={i.id}>
                                                                                     <td className="border-b border-r border-emerald-500 px-6 py-4">{i.indikator || "-"}</td>
+                                                                                    <td className="border-b border-r border-emerald-500 px-6 py-4">{i.definisi_operational || "-"}</td>
                                                                                     <td className="border-b border-r border-emerald-500 px-6 py-4">{i.rumus_perhitungan || "-"}</td>
                                                                                     <td className="border-b border-r border-emerald-500 px-6 py-4">{i.sumber_data || "-"}</td>
                                                                                     {i.target.map((t: Target) => (

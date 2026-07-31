@@ -6,7 +6,7 @@ import Select from 'react-select'
 import PohonTematik from './PohonTematik';
 import { TahunNull } from '@/components/global/OpdTahunNull';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ButtonBlackBorder, ButtonSky } from '@/components/global/Button';
+import { ButtonBlackBorder, ButtonCetak, ButtonSky } from '@/components/global/Button';
 import { TbEye, TbPrinter } from 'react-icons/tb';
 import html2canvas from 'html2canvas';
 import { AlertNotification, AlertQuestion2 } from '@/components/global/Alert';
@@ -61,57 +61,6 @@ const TematikKab = () => {
         }
     }, [searchParams]);
 
-    const handleDownloadPdf = async () => {
-        if (!containerRef.current) return;
-
-        const elementsToHide = document.querySelectorAll(".hide-on-capture") as NodeListOf<HTMLElement>;
-        elementsToHide.forEach((el) => (el.style.display = "none"));
-
-        try {
-            setLoadingCetak(true);
-            const element = containerRef.current;
-            const canvas = await html2canvas(element, {
-                scale: 2, // Higher scale for better quality
-                width: element.scrollWidth + 50, // Use full scrollable width
-                height: element.scrollHeight + 250, // Use full scrollable height
-                windowWidth: element.scrollWidth + 50, // Force full width rendering
-                windowHeight: element.scrollHeight + 250, // Force full height rendering
-                useCORS: true, // For cross-origin images
-            });
-
-            // Create a new canvas with extra padding
-            const paddingTop = 50 // Extra padding for the top of the canvas
-            const newCanvas = document.createElement("canvas");
-            newCanvas.width = canvas.width;
-            newCanvas.height = canvas.height + paddingTop;
-
-            const ctx = newCanvas.getContext("2d");
-            if (ctx) {
-                ctx.fillStyle = "white"; // Optional: Background color
-                ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
-                ctx.drawImage(canvas, 0, paddingTop);
-
-                //hitung posisi horizontal untuk centering
-                const horizontalOffset = (newCanvas.width - canvas.width) / 2;
-
-                // Gambar canvas di tengah horizontal
-                ctx.drawImage(canvas, horizontalOffset, paddingTop);
-            }
-
-            const imgData = newCanvas.toDataURL("image/png");
-            const link = document.createElement("a");
-            link.href = imgData;
-            link.download = `pohon_kinerja_pemda_${Tahun?.label ?? 'tahun_undetected'}.png`;
-            link.click();
-        } catch (error) {
-            alert("Error capturing the element");
-            console.error("Error capturing the element:", error);
-        } finally {
-            // Ensure elements are restored even if an error occurs
-            elementsToHide.forEach((el) => (el.style.display = ""));
-            setLoadingCetak(false);
-        }
-    };
     const fetchTematik = async () => {
         const API_URL = process.env.NEXT_PUBLIC_API_URL;
         setIsLoading(true);
@@ -150,6 +99,7 @@ const TematikKab = () => {
             return;
         }
         setTematik(tema);
+        // router.push(`/pohonkinerjapemda?tema=${tema.label}&id=${tema.value}`);
         router.push(`/pohonkinerjapemda`);
     };
 
@@ -208,27 +158,16 @@ const TematikKab = () => {
                             }}
                         >
                             <TbEye className='mr-1' />
-                            {ShowAll ? 
+                            {ShowAll ?
                                 'Sembunyikan Semua Pohon'
-                            :
+                                :
                                 'Tampilkan Semua Pohon'
                             }
                         </ButtonBlackBorder>
-                        <ButtonSky
-                            onClick={() => {
-                                AlertQuestion2("Sembunyikan Sidebar untuk hasil cetak penuh", "", "warning", "Cetak", "Batal").then((result) => {
-                                    if (result.isConfirmed) {
-                                        handleDownloadPdf();
-                                        if (!containerRef.current) {
-                                            AlertNotification("REF NULL", "", "error", 1000);
-                                        }
-                                    }
-                                });
-                            }}
-                        >
-                            <TbPrinter className='mr-1' />
-                            Cetak Pohon Kinerja
-                        </ButtonSky>
+
+                        <div className="mx-3">
+                          <ButtonCetak text={"Cetak Pokin Tematik PDF"} jenis={"pemda"} tahun={Tahun} pokin_id={Tematik.value} />
+                        </div>
                     </>
                 }
             </div>

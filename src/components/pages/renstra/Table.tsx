@@ -2,8 +2,8 @@
 
 import { getToken } from "@/components/lib/Cookie";
 import React, { useEffect, useState } from "react";
-import { ButtonGreenBorder, ButtonSkyBorder } from "@/components/global/Button";
-import { TbCirclePlus, TbPencil } from "react-icons/tb";
+import { ButtonSkyBorder } from "@/components/global/Button";
+import { TbCirclePlus, TbPencil, TbPrinter } from "react-icons/tb";
 import { LoadingClip } from "@/components/global/Loading";
 import { ModalMatrix, ModalEditMatrix } from "./ModalMatrix";
 import { ModalPaguAnggaran } from "./ModalPaguAnggaran";
@@ -138,6 +138,10 @@ export const TableRenstra: React.FC<table> = ({ jenis, tahun_awal, tahun_akhir, 
         <>
             {Matrix.map((item: matrix, index: number) => (
                 <React.Fragment key={index}>
+                    <ButtonSkyBorder className="w-full flex items-center gap-1">
+                        <TbPrinter />
+                        Cetak
+                    </ButtonSkyBorder>
                     <div className="overflow-auto m-2 rounded-xl border">
                         <TableTotalPagu
                             tahun_list={tahun_list}
@@ -182,7 +186,7 @@ export const TableRenstra: React.FC<table> = ({ jenis, tahun_awal, tahun_akhir, 
                                                                 jenis="Bidang Urusan"
                                                                 type={jenis}
                                                                 indikator={br.indikator}
-                                                                anggaran={u.anggaran}
+                                                                anggaran={br.anggaran}
                                                                 kode={br.kode}
                                                                 nama={br.nama}
                                                                 kode_opd={kode_opd}
@@ -203,7 +207,7 @@ export const TableRenstra: React.FC<table> = ({ jenis, tahun_awal, tahun_akhir, 
                                                                                 jenis="Program"
                                                                                 type={jenis}
                                                                                 indikator={p.indikator}
-                                                                                anggaran={u.anggaran}
+                                                                                anggaran={p.anggaran}
                                                                                 kode={p.kode}
                                                                                 nama={p.nama}
                                                                                 kode_opd={kode_opd}
@@ -224,7 +228,7 @@ export const TableRenstra: React.FC<table> = ({ jenis, tahun_awal, tahun_akhir, 
                                                                                                 jenis="Kegiatan"
                                                                                                 type={jenis}
                                                                                                 indikator={k.indikator}
-                                                                                                anggaran={u.anggaran}
+                                                                                                anggaran={k.anggaran}
                                                                                                 kode={k.kode}
                                                                                                 nama={k.nama}
                                                                                                 kode_opd={kode_opd}
@@ -245,7 +249,7 @@ export const TableRenstra: React.FC<table> = ({ jenis, tahun_awal, tahun_akhir, 
                                                                                                                 jenis="Sub Kegiatan"
                                                                                                                 type={jenis}
                                                                                                                 indikator={sk.indikator}
-                                                                                                                anggaran={u.anggaran}
+                                                                                                                anggaran={sk.anggaran}
                                                                                                                 kode={sk.kode}
                                                                                                                 nama={sk.nama}
                                                                                                                 kode_opd={kode_opd}
@@ -281,7 +285,7 @@ export const TableRenstra: React.FC<table> = ({ jenis, tahun_awal, tahun_akhir, 
 export const TheadMatrix: React.FC<Thead> = ({ jenis, type, tahun_list }) => {
     return (
         <thead>
-            <tr className={` 
+            <tr className={`
                 ${jenis === "Urusan" && "bg-white text-black"}
                 ${jenis === "Bidang Urusan" && "bg-red-500 text-white"}
                 ${jenis === "Program" && "bg-blue-500 text-white"}

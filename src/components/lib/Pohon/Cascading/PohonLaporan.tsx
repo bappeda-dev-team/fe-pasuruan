@@ -3,6 +3,7 @@ import { TbEye, TbPrinter } from 'react-icons/tb';
 import { ButtonSky, ButtonGreenBorder, ButtonBlackBorder } from '@/components/global/Button';
 import { ModalCetak } from '@/components/pages/Pohon/ModalCetak';
 import { ModalIndikator } from '@/components/pages/Pohon/ModalIndikator';
+import Link from 'next/link';
 
 interface pohon {
     tema: any;
@@ -133,12 +134,14 @@ export const PohonLaporan: React.FC<pohon> = ({ tema, show_all, set_show_all }) 
                 {/* BODY */}
                 <div className="flex flex-col justify-center my-3">
                     <TablePohonLaporan item={tema} tipe="non-cetak" />
-                    <div className="mt-3">
-                        <Pagu
-                            jenis={tema.jenis_pohon}
-                            anggaran={tema.total_anggaran || tema.pagu_anggaran || tema.pagu || '0'}
-                        />
-                    </div>
+                    {tema.jenis_pohon != "Operational N" &&
+                        <div className="mt-3">
+                            <Pagu
+                                jenis={tema.jenis_pohon}
+                                anggaran={tema.total_anggaran || tema.pagu_anggaran || tema.pagu || '0'}
+                            />
+                        </div>
+                    }
                     {(tema.program) &&
                         <div className="mt-5">
                             <ProgramKegiatan
@@ -178,10 +181,21 @@ export const PohonLaporan: React.FC<pohon> = ({ tema, show_all, set_show_all }) 
                         ${(tema.jenis_pohon === "Strategic Pemda" || tema.jenis_pohon === "Tactical Pemda" || tema.jenis_pohon === "Operational Pemda") && 'border-black'}
                     `}
                 >
-                    <ButtonSky className='flex items-center gap-1' onClick={() => setIsCetak(true)}>
-                        <TbPrinter />
-                        Cetak
-                    </ButtonSky>
+                    {tema.jenis_pohon === "Tematik" ?
+                        <Link href={`/cetak/cascading-tematik/${tema.id_pohon}`} target="_blank" rel="noopener noreferrer">
+                            <ButtonSky
+                                className='w-full flex items-center gap-1'
+                            >
+                                <TbPrinter />
+                                Cetak Tematik
+                            </ButtonSky>
+                        </Link>
+                        :
+                        <ButtonSky className='flex items-center gap-1' onClick={() => setIsCetak(true)}>
+                            <TbPrinter />
+                            Cetak
+                        </ButtonSky>
+                    }
                     <ButtonBlackBorder className={`px-3 bg-white flex justify-center items-center py-1 bg-gradient-to-r rounded-lg hide-on-capture`}
                         onClick={handleShow}
                     >
@@ -333,12 +347,12 @@ export const Pagu: React.FC<{ jenis: string, anggaran: number }> = ({ jenis, ang
                             <p>Pagu : </p>
                             <div className={`py-1 px-3 rounded-lg
                                 ${(jenis === 'Tematik' || jenis === "Sub Tematik" || jenis === "Sub Sub Tematik" || jenis === "Super Sub Tematik") && 'border border-black'}
-                                ${(jenis === 'Strategic Pemda' || jenis === 'Strategic') && 'text-white bg-red-600'}    
+                                ${(jenis === 'Strategic Pemda' || jenis === 'Strategic') && 'text-white bg-red-600'}
                                 ${(jenis === 'Tactical Pemda' || jenis === 'Tactical') && 'text-white bg-blue-500'}
                                 ${(jenis === 'Operational Pemda' || jenis === 'Operational') && 'text-white bg-green-500'}
                                 ${jenis === 'Operational N' && 'text-black border border-green-500'}
                             `}>
-                                Rp. {formatRupiah(anggaran)}
+                                Rp. {formatRupiah(anggaran || 0)}
                             </div>
                         </td>
                     </tr>
@@ -374,11 +388,11 @@ export const ProgramKegiatan: React.FC<ProgramKegiatan> = ({ jenis, tipe, urusan
                             ${(
                                 jenis === 'Tematik' || jenis === "Sub Tematik" || jenis === "Sub Sub Tematik" || jenis === "Super Sub Tematik" ||
                                 jenis === 'Strategic Pemda' || jenis === 'Tactical Pemda' || jenis === 'Operational Pemda')
-                            && 'border border-black'}    
-                            ${jenis === 'Strategic' && 'border-b border-red-700 bg-white'}    
-                            ${jenis === 'Tactical' && 'border-b border-blue-500 bg-white'}    
-                            ${jenis === 'Operational' && 'border-b border-green-500 bg-white'}  
-                            ${jenis === 'Operational N' && 'border border-green-500 bg-white'}  
+                            && 'border border-black'}
+                            ${jenis === 'Strategic' && 'border-b border-red-700 bg-white'}
+                            ${jenis === 'Tactical' && 'border-b border-blue-500 bg-white'}
+                            ${jenis === 'Operational' && 'border-b border-green-500 bg-white'}
+                            ${jenis === 'Operational N' && 'border border-green-500 bg-white'}
                         `}>
                             {urusan && "Urusan"}
                             {bidang_urusan && "Bidang Urusan"}
@@ -393,9 +407,9 @@ export const ProgramKegiatan: React.FC<ProgramKegiatan> = ({ jenis, tipe, urusan
                             ${(
                                 jenis === 'Tematik' || jenis === "Sub Tematik" || jenis === "Sub Sub Tematik" || jenis === "Super Sub Tematik" ||
                                 jenis === 'Strategic Pemda' || jenis === 'Tactical Pemda' || jenis === 'Operational Pemda')
-                            && 'border-b border-x border-black rounded-b-lg'}    
-                            ${(jenis === 'Strategic' || jenis === 'Tactical' || jenis === 'Operational') && 'rounded-b-lg'}      
-                            ${jenis === 'Operational N' && 'border-x border-b border-green-500 rounded-b-lg'}    
+                            && 'border-b border-x border-black rounded-b-lg'}
+                            ${(jenis === 'Strategic' || jenis === 'Tactical' || jenis === 'Operational') && 'rounded-b-lg'}
+                            ${jenis === 'Operational N' && 'border-x border-b border-green-500 rounded-b-lg'}
                         `}>
                             {(jenis === 'Operational' || jenis === 'Operational Pemda' || jenis === 'Operational N') &&
                                 <React.Fragment>
@@ -500,7 +514,7 @@ export const TableIndikator: React.FC<TableIndikator> = ({ jenis, indikator }) =
                                 ) && "border-black"}
                             ${jenis === "Strategic" && "border-red-700"}
                             ${jenis === "Tactical" && "border-blue-500"}
-                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}  
+                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                         `}
                         >
                             {indikator.length > 1 ?
@@ -517,7 +531,7 @@ export const TableIndikator: React.FC<TableIndikator> = ({ jenis, indikator }) =
                                 ) && "border-black"}
                             ${jenis === "Strategic" && "border-red-700"}
                             ${jenis === "Tactical" && "border-blue-500"}
-                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                         `}
                         >
                             {data.target ? data.target : "-"} / {data.satuan ? data.satuan : "-"}
@@ -571,7 +585,7 @@ export const IndikatorKosong: React.FC<IndikatorKosong> = ({ jenis }) => {
                         ) && "border-black"}
                         ${jenis === "Strategic" && "border-red-700"}
                         ${jenis === "Tactical" && "border-blue-500"}
-                        ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                        ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                     `}
                 >
                     Target/Satuan
@@ -584,7 +598,7 @@ export const IndikatorKosong: React.FC<IndikatorKosong> = ({ jenis }) => {
                         ) && "border-black"}
                         ${jenis === "Strategic" && "border-red-700"}
                         ${jenis === "Tactical" && "border-blue-500"}
-                        ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}  
+                        ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                     `}
                 >
                     -
@@ -611,7 +625,7 @@ export const PelaksanaKosong: React.FC<PelaksanaKosong> = ({ jenis }) => {
                                 jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda")
                             && "border-black"
                             }
-                                        ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}   
+                                        ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                     `}
                     >
                         Pelaksana
@@ -626,7 +640,7 @@ export const PelaksanaKosong: React.FC<PelaksanaKosong> = ({ jenis }) => {
                                 jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda")
                             && "border-black"
                             }
-                                        ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}  
+                                        ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                     `}
                     >
                         pelaksana belum di tambahkan di cascading
@@ -682,7 +696,7 @@ export const TablePelaksana: React.FC<TablePelaksana> = ({ jenis, pelaksana, tip
                                         jenis === 'Tematik' || jenis === "Sub Tematik" || jenis === "Sub Sub Tematik" || jenis === "Super Sub Tematik" ||
                                         jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"
                                     }
-                                    ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}   
+                                    ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                 `}
                             >
                                 {pelaksana.length > 1 ?
@@ -700,7 +714,7 @@ export const TablePelaksana: React.FC<TablePelaksana> = ({ jenis, pelaksana, tip
                                         jenis === 'Tematik' || jenis === "Sub Tematik" || jenis === "Sub Sub Tematik" || jenis === "Super Sub Tematik" ||
                                         jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"
                                     }
-                                    ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"} 
+                                    ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                 `}
                             >
                                 {item.nama_rencana_kinerja || '-'}
@@ -720,7 +734,7 @@ export const TablePelaksana: React.FC<TablePelaksana> = ({ jenis, pelaksana, tip
                                                     jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda")
                                                 && "border-black"
                                                 }
-                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}   
+                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                             `}
                                         >
                                             Indikator {item.indikator.length > 1 && `ke ${i_index + 1}`}
@@ -735,7 +749,7 @@ export const TablePelaksana: React.FC<TablePelaksana> = ({ jenis, pelaksana, tip
                                                     jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda")
                                                 && "border-black"
                                                 }
-                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"} 
+                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                             `}
                                         >
                                             {i.nama_indikator || "-"}
@@ -753,7 +767,7 @@ export const TablePelaksana: React.FC<TablePelaksana> = ({ jenis, pelaksana, tip
                                                         jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda")
                                                     && "border-black"
                                                     }
-                                                    ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}   
+                                                    ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                                 `}
                                             >
                                                 Target / Satuan
@@ -768,7 +782,7 @@ export const TablePelaksana: React.FC<TablePelaksana> = ({ jenis, pelaksana, tip
                                                         jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda")
                                                     && "border-black"
                                                     }
-                                                    ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"} 
+                                                    ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                                 `}
                                             >
                                                 {t.target || "-"} / {t.satuan || "-"}

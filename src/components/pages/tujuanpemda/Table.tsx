@@ -25,6 +25,7 @@ interface Target {
 interface Indikator {
     id: string;
     indikator: string;
+    definisi_operational: string;
     rumus_perhitungan: string;
     sumber_data: string;
     target: Target[];
@@ -214,8 +215,10 @@ const Table: React.FC<table> = ({id_periode, tahun_awal, tahun_akhir, jenis, tah
                             <th rowSpan={2} className="border-r border-b px-6 py-3 min-w-[300px]">Tema</th>
                             <th rowSpan={2} className="border-r border-b px-6 py-3 min-w-[300px]">Tujuan Pemda</th>
                             <th rowSpan={2} className="border-r border-b px-6 py-3 min-w-[300px]">Visi</th>
+                            <th rowSpan={2} className="border-r border-b px-6 py-3 min-w-[300px]">Misi</th>
                             <th rowSpan={2} className="border-r border-b px-6 py-3 min-w-[100px]">Aksi</th>
                             <th rowSpan={2} className="border-r border-b px-6 py-3 min-w-[200px]">Indikator</th>
+                            <th rowSpan={2} className="border-r border-b px-6 py-3 min-w-[300px]">Definisi Operational</th>
                             <th rowSpan={2} className="border-r border-b px-6 py-3 min-w-[300px]">Rumus Perhitungan</th>
                             <th rowSpan={2} className="border-r border-b px-6 py-3 min-w-[300px]">Sumber Data</th>
                             {tahun_list.map((item: any) => (
@@ -294,7 +297,8 @@ const Table: React.FC<table> = ({id_periode, tahun_awal, tahun_akhir, jenis, tah
                                                         </td>
                                                         <td className="border-x border-b border-emerald-500 px-6 py-6 h-[150px]" rowSpan={item.indikator !== null ? item.indikator.length + 1 : 2}>
                                                             {item.visi || "-"}
-                                                            /
+                                                        </td>
+                                                        <td className="border-x border-b border-emerald-500 px-6 py-6 h-[150px]" rowSpan={item.indikator !== null ? item.indikator.length + 1 : 2}>
                                                             {item.misi || "-"}
                                                         </td>
                                                         <td className="border-x border-b border-emerald-500 px-6 py-6" rowSpan={item.indikator !== null ? item.indikator.length + 1 : 2}>
@@ -330,6 +334,7 @@ const Table: React.FC<table> = ({id_periode, tahun_awal, tahun_akhir, jenis, tah
                                                         item.indikator.map((i: Indikator) => (
                                                             <tr key={i.id}>
                                                                 <td className="border-x border-b border-emerald-500 px-6 py-6">{i.indikator || "-"}</td>
+                                                                <td className="border-x border-b border-emerald-500 px-6 py-6">{i.definisi_operational || "-"}</td>
                                                                 <td className="border-x border-b border-emerald-500 px-6 py-6">{i.rumus_perhitungan || "-"}</td>
                                                                 <td className="border-x border-b border-emerald-500 px-6 py-6">{i.sumber_data || "-"}</td>
                                                                 {i.target.map((t: Target) => (

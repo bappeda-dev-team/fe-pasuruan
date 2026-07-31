@@ -142,9 +142,6 @@ export const FormUser = () => {
 
     const onSubmit: SubmitHandler<FormValue> = async (data) => {
         const API_URL = process.env.NEXT_PUBLIC_API_URL;
-        // const RolesIds = Roles?.map((Roles) => ({
-        //     role_id: Roles.value,
-        // })) || [];
         const formData = {
             //key : value
             nip: data.nip?.value,
@@ -320,7 +317,7 @@ export const FormUser = () => {
                                             <input
                                                 {...field}
                                                 className="border px-4 py-2 rounded-lg flex-1"
-                                                minLength={8}
+                                                // minLength={8}
                                                 id="password"
                                                 type={showPassword ? "text" : "password"}
                                                 placeholder="Masukkan Password"
@@ -541,7 +538,7 @@ export const FormEditUser = () => {
                         }
                         setNip(nip);
                     }
-                    if (data.role) {
+                    if(data.role){
                         const role = {
                             value: data.role[0].id,
                             label: data.role[0].role,
@@ -564,6 +561,9 @@ export const FormEditUser = () => {
 
     const onSubmit: SubmitHandler<FormValue> = async (data) => {
         const API_URL = process.env.NEXT_PUBLIC_API_URL;
+        //   const RolesIds = Roles?.map((Roles) => ({
+        //       role_id: Roles.value, // Ubah `value` menjadi `pegawai_id`
+        //   })) || [];
         const formData = {
             //key : value
             nip: data.nip,

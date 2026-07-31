@@ -8,6 +8,8 @@ import { ModalReview } from '@/components/pages/Pohon/ModalReview';
 import { LoadingClip } from '@/components/global/Loading';
 import { ModalClone } from '@/components/pages/Pohon/ModalClone';
 import { ModalCetak } from '@/components/pages/Pohon/ModalCetak';
+import { useRouter } from 'nextjs-toploader/app';
+import Link from 'next/link';
 
 interface pohon {
     tema: any;
@@ -28,8 +30,17 @@ interface Review {
 }
 
 interface Tagging {
+    id: number;
+    id_pokin: number;
     nama_tagging: string;
-    keterangan_tagging: string;
+    keterangan_tagging_program: KeteranganTagging[];
+}
+interface KeteranganTagging {
+    id: number;
+    id_tagging: number;
+    kode_program_unggulan: string;
+    keterangan_tagging_program: string;
+    tahun: string;
 }
 
 export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_all, set_show_all, idForm }) => {
@@ -425,8 +436,7 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                                         ))}
                                                     </table>
                                                 </div>
-                                    )
-                                    }
+                                    )}
                                     {/* BUTTON REVIEW */}
                                     <div
                                         className={`flex justify-evenly border my-3 py-3 rounded-lg bg-white border-black hide-on-capture
@@ -478,14 +488,24 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                             }}
                                         />
                                     </div>
+                                    {tema.level_pohon === 0 &&
+                                        <Link href={`/cetak/pokin-tematik/${tema.id}`} target="_blank" rel="noopener noreferrer">
+                                            <ButtonSky
+                                                className='w-full flex items-center gap-1'
+                                            >
+                                                <TbPrinter />
+                                                Cetak Tematik
+                                            </ButtonSky>
+                                        </Link>
+                                    }
                                     {/* BUTTON ACTION INSIDE BOX */}
                                     {user != 'reviewer' &&
                                         <div
                                             className={`flex justify-evenly border my-3 py-3 rounded-lg bg-white border-black hide-on-capture
-                                ${tema.jenis_pohon === "Strategic" && 'border-white'}
-                                ${tema.jenis_pohon === "Tactical" && 'border-white'}
-                                ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && 'border-white'}
-                            `}
+                                                ${tema.jenis_pohon === "Strategic" && 'border-white'}
+                                                ${tema.jenis_pohon === "Tactical" && 'border-white'}
+                                                ${(tema.jenis_pohon === "Operational" || tema.jenis_pohon === "Operational N") && 'border-white'}
+                                            `}
                                         >
                                             <React.Fragment>
                                                 {!['Strategic', 'Tactical', 'Operational', 'Operational N'].includes(tema.jenis_pohon) &&
@@ -507,12 +527,12 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                                     <>
                                                         <button
                                                             className={`border px-3 py-1 rounded-lg flex jutify-center items-center gap-1
-                                                        ${tema.is_active === false ?
+                                                                ${tema.is_active === false ?
                                                                     'border-green-500 text-green-500 hover:bg-green-500 hover:text-white'
                                                                     :
                                                                     'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
                                                                 }
-                                                    `}
+                                                            `}
                                                             onClick={() => {
                                                                 AlertQuestion(`${tema.is_active === true ? 'NON AKTIFKAN' : 'AKTIFKAN'}`, `${tema.is_active === false ? 'Aktifkan tematik?' : 'non aktifkan tematik'}`, "question", `${tema.is_active === false ? 'Aktifkan' : 'Non Aktifkan'}`, "Batal").then((result) => {
                                                                     if (result.isConfirmed) {
@@ -530,6 +550,9 @@ export const Pohon: React.FC<pohon> = ({ tema, tahun, deleteTrigger, user, show_
                                                             //     AlertNotification("Fitur dalam perbaikan", "", "warning", 3000);
                                                             // }}
                                                             onClick={() => setIsClone(true)}
+                                                        // onClick={() => {
+                                                        //     AlertNotification("Fitur dalam perbaikan", "", "warning", 3000);
+                                                        // }}
                                                         >
                                                             <TbCopy />
                                                             Clone
@@ -715,7 +738,13 @@ export const TablePohon = (props: any) => {
                             <h1 className='text-emerald-500'><TbCircleCheckFilled /></h1>
                             <h1 className='font-semibold'>{tg.nama_tagging || "-"}</h1>
                         </div>
-                        <h1 className="p-1 text-slate-600 text-start">{tg.keterangan_tagging || ""}</h1>
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                            {tg?.keterangan_tagging_program?.map((tp: KeteranganTagging, tp_index: number) => (
+                                <h1 key={tp_index} className="py-1 px-3 text-white text-start bg-yellow-500 rounded-lg">
+                                    {tg.keterangan_tagging_program.length > 1 && `${tp_index + 1}.`} {tp.keterangan_tagging_program || ""}
+                                </h1>
+                            ))}
+                        </div>
                     </div>
                 ))
             }
@@ -800,46 +829,83 @@ export const TablePohon = (props: any) => {
                                         {data.nama_indikator ? data.nama_indikator : "-"}
                                     </td>
                                 </tr>
-                                {data.targets.map((data: any) => (
-                                    <tr key={data.id_target}>
+                                {data.targets ?
+                                    data.targets.map((data: any) => (
+                                        <tr key={data.id_target}>
+                                            <td
+                                                className={`min-w-[100px] border px-2 py-3 bg-white text-start
+                                                ${jenis === "Tematik" && "border-black"}
+                                                ${jenis === "Sub Tematik" && "border-black"}
+                                                ${jenis === "Sub Sub Tematik" && "border-black"}
+                                                ${jenis === "Super Sub Tematik" && "border-black"}
+                                                ${jenis === "Strategic" && "border-red-700"}
+                                                ${jenis === "Tactical" && "border-blue-500"}
+                                                ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
+                                                ${jenis === "Strategic Pemda" && "border-black"}
+                                                ${jenis === "Tactical Pemda" && "border-black"}
+                                                ${jenis === "Operational Pemda" && "border-black"}
+                                            `}
+                                            >
+                                                {indikator.length > 1 ?
+                                                    <p>Target/Satuan {index + 1}</p>
+                                                    :
+                                                    <p>Target/Satuan</p>
+                                                }
+                                            </td>
+                                            <td
+                                                className={`min-w-[300px] border px-2 py-3 bg-white text-start
+                                                ${jenis === "Tematik" && "border-black"}
+                                                ${jenis === "Sub Tematik" && "border-black"}
+                                                ${jenis === "Sub Sub Tematik" && "border-black"}
+                                                ${jenis === "Super Sub Tematik" && "border-black"}
+                                                ${jenis === "Strategic" && "border-red-700"}
+                                                ${jenis === "Tactical" && "border-blue-500"}
+                                                ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
+                                                ${jenis === "Strategic Pemda" && "border-black"}
+                                                ${jenis === "Tactical Pemda" && "border-black"}
+                                                ${jenis === "Operational Pemda" && "border-black"}
+                                            `}
+                                            >
+                                                {data.target ? data.target : "-"} / {data.satuan ? data.satuan : "-"}
+                                            </td>
+                                        </tr>
+                                    ))
+                                    :
+                                    <tr>
                                         <td
                                             className={`min-w-[100px] border px-2 py-3 bg-white text-start
-                                            ${jenis === "Tematik" && "border-black"}
-                                            ${jenis === "Sub Tematik" && "border-black"}
-                                            ${jenis === "Sub Sub Tematik" && "border-black"}
-                                            ${jenis === "Super Sub Tematik" && "border-black"}
-                                            ${jenis === "Strategic" && "border-red-700"}
-                                            ${jenis === "Tactical" && "border-blue-500"}
-                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
-                                            ${jenis === "Strategic Pemda" && "border-black"}
-                                            ${jenis === "Tactical Pemda" && "border-black"}
-                                            ${jenis === "Operational Pemda" && "border-black"}
-                                        `}
+                                                ${jenis === "Tematik" && "border-black"}
+                                                ${jenis === "Sub Tematik" && "border-black"}
+                                                ${jenis === "Sub Sub Tematik" && "border-black"}
+                                                ${jenis === "Super Sub Tematik" && "border-black"}
+                                                ${jenis === "Strategic" && "border-red-700"}
+                                                ${jenis === "Tactical" && "border-blue-500"}
+                                                ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
+                                                ${jenis === "Strategic Pemda" && "border-black"}
+                                                ${jenis === "Tactical Pemda" && "border-black"}
+                                                ${jenis === "Operational Pemda" && "border-black"}
+                                            `}
                                         >
-                                            {indikator.length > 1 ?
-                                                <p>Target/Satuan {index + 1}</p>
-                                                :
-                                                <p>Target/Satuan</p>
-                                            }
+                                            -
                                         </td>
                                         <td
                                             className={`min-w-[300px] border px-2 py-3 bg-white text-start
-                                            ${jenis === "Tematik" && "border-black"}
-                                            ${jenis === "Sub Tematik" && "border-black"}
-                                            ${jenis === "Sub Sub Tematik" && "border-black"}
-                                            ${jenis === "Super Sub Tematik" && "border-black"}
-                                            ${jenis === "Strategic" && "border-red-700"}
-                                            ${jenis === "Tactical" && "border-blue-500"}
-                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
-                                            ${jenis === "Strategic Pemda" && "border-black"}
-                                            ${jenis === "Tactical Pemda" && "border-black"}
-                                            ${jenis === "Operational Pemda" && "border-black"}
-                                        `}
+                                                ${jenis === "Tematik" && "border-black"}
+                                                ${jenis === "Sub Tematik" && "border-black"}
+                                                ${jenis === "Sub Sub Tematik" && "border-black"}
+                                                ${jenis === "Super Sub Tematik" && "border-black"}
+                                                ${jenis === "Strategic" && "border-red-700"}
+                                                ${jenis === "Tactical" && "border-blue-500"}
+                                                ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
+                                                ${jenis === "Strategic Pemda" && "border-black"}
+                                                ${jenis === "Tactical Pemda" && "border-black"}
+                                                ${jenis === "Operational Pemda" && "border-black"}
+                                            `}
                                         >
-                                            {data.target ? data.target : "-"} / {data.satuan ? data.satuan : "-"}
+                                            -
                                         </td>
                                     </tr>
-                                ))}
+                                }
                             </React.Fragment>
                         ))
                         :

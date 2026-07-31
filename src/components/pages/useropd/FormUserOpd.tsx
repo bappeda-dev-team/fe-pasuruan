@@ -544,7 +544,6 @@ export const FormEditUserOpd = () => {
             const result = await response.json();
             if (result.code === 200 || result.code === 201) {
                 AlertNotification("Berhasil", "Berhasil mengubah data user", "success", 1000);
-                // AlertNotification(`${result.code}`, `${result.data}`, "success", 1000);
                 router.push("/useropd");
             } else {
                 AlertNotification(`Gagal`, `${result.data}`, "error", 2000);
@@ -589,47 +588,6 @@ export const FormEditUserOpd = () => {
                     className="flex flex-col mx-5 py-5"
                 >
                     <h1 className="border border-slate-200 bg-slate-200 rounded-lg p-3">NIP User ini : {Nip?.value}</h1>
-                    {/* <div className="flex flex-col py-3">
-                    <label
-                        className="uppercase text-xs font-bold text-gray-700 my-2"
-                        htmlFor="nip"
-                    >
-                        Pegawai
-                    </label>
-                    <Controller
-                        name="nip"
-                        control={control}
-                        render={({ field }) => (
-                        <>
-                            <Select
-                                {...field}
-                                placeholder="Pilih pegawai"
-                                value={Nip}
-                                options={PegawaiOption}
-                                isLoading={IsLoading}
-                                isSearchable
-                                isClearable
-                                onMenuOpen={() => {
-                                    if (RolesOption.length === 0) {
-                                        fetchPegawai();
-                                    }
-                                }}
-                                onChange={(option) => {
-                                    field.onChange(option);
-                                    setNip(option);
-                                }}
-                                styles={{
-                                    control: (baseStyles) => ({
-                                    ...baseStyles,
-                                    borderRadius: '8px',
-                                    textAlign: 'start',
-                                    })
-                                }}
-                            />
-                        </>
-                        )}
-                    />
-                </div> */}
                     <div className="flex flex-col py-3">
                         <label
                             className="uppercase text-xs font-bold text-gray-700 my-2"

@@ -1,12 +1,13 @@
 'use client'
 
-import { ButtonRed, ButtonSkyBorder, ButtonGreenBorder } from "@/components/global/Button";
+import { ButtonGreenBorder, ButtonRed, ButtonSkyBorder } from "@/components/global/Button";
 import { useEffect, useState } from "react";
 import { LoadingClip } from "@/components/global/Loading";
 import { getToken } from "@/components/lib/Cookie";
 import { AlertNotification, AlertQuestion } from "@/components/global/Alert";
 import { TbCirclePlus, TbTrash } from "react-icons/tb";
 import { ModalSubKegiatanOpd } from "./ModalSubKegiatanOpd";
+import { useBrandingContext } from "@/context/BrandingContext";
 
 interface subkegiatan {
     id: number;
@@ -29,6 +30,7 @@ const Table: React.FC<table> = ({ tahun, opd }) => {
     const [DataNull, setDataNull] = useState<boolean | null>(null);
     const [JenisModal, setJenisModal] = useState<"opd" | "all">("all");
     const token = getToken();
+    const { branding } = useBrandingContext();
 
     // MODAL & TRIGGER
     const [ModalTambah, setModalTambah] = useState<boolean>(false);
@@ -182,7 +184,7 @@ const Table: React.FC<table> = ({ tahun, opd }) => {
                     tahun={String(tahun)}
                     isOpen={ModalTambah}
                     jenis={JenisModal}
-                    onClose={() => setModalTambah(false)}
+                    onClose={() => handleModal("all")}
                     onSuccess={() => setfetchTrigger((prev) => !prev)}
                 />
             </div>

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
     TbPrinter, TbLayersLinked, TbBookmarkPlus, TbCheck, TbCircleLetterXFilled,
-    TbCirclePlus, TbHourglass, TbPencil, TbTrash, TbEye, TbEyeClosed, TbArrowAutofitWidth,
-    TbDeviceTabletSearch, TbZoom, TbCircleCheckFilled, TbArrowGuide
+    TbCirclePlus, TbHourglass, TbPencil, TbTrash, TbEye, TbEyeClosed,
+    TbArrowAutofitWidth, TbZoom, TbCircleCheckFilled, TbArrowGuide, TbAB2
 } from 'react-icons/tb';
 import { ButtonSky, ButtonSkyBorder, ButtonRedBorder, ButtonGreenBorder, ButtonBlackBorder } from '@/components/global/Button';
 import { AlertNotification, AlertQuestion } from '@/components/global/Alert';
@@ -13,8 +13,9 @@ import { ModalPindahPohonOpd } from '@/components/pages/Pohon/ModalPindahPohonOp
 import { ModalReview } from '@/components/pages/Pohon/ModalReview';
 import { ModalCetak } from '@/components/pages/Pohon/ModalCetak';
 import { LoadingClip } from '@/components/global/Loading';
-import { useBrandingContext } from '@/context/BrandingContext';
 import { FormAmbilPohonOpd } from './FormAmbilPohonOpd';
+import { useBrandingContext } from '@/context/BrandingContext';
+import Link from 'next/link';
 
 interface pohon {
     tema: any;
@@ -37,23 +38,19 @@ interface Indikator {
     targets: Target[];
 }
 
-interface Cross {
-    id: number;
-    parent: string;
-    nama_pohon: string;
-    jenis_pohon: string;
-    level_pohon: number;
-    kode_opd: string;
-    nama_opd: string;
-    keterangan: string;
-    tahun: string;
-    status: string;
-    indikator: Indikator[];
-}
-
 interface Tagging {
+    id: number;
+    id_pokin: number;
     nama_tagging: string;
-    keterangan_tagging: string;
+    keterangan_tagging_program: KeteranganTagging[];
+}
+interface KeteranganTagging {
+    id: number;
+    id_tagging: number;
+    kode_program_unggulan: string;
+    nama_program_prioritas: string;
+    keterangan_tagging_program: string;
+    tahun: string;
 }
 
 interface Review {
@@ -63,26 +60,41 @@ interface Review {
     keterangan: string;
     nama_pegawai: string;
 }
+interface CrosscuttingDiterima {
+    id_crosscutting: number;
+    keterangan_crosscutting: string;
+    nama_pohon_asal: string;
+    kode_opd_asal: string;
+    nama_opd_asal: string;
+    status: string;
+}
+interface CrosscuttingDikirim {
+    id_crosscutting: number;
+    keterangan_crosscutting: string;
+    nama_pohon_tujuan: string;
+    kode_opd_tujuan: string;
+    nama_opd_tujuan: string;
+    status: string;
+}
 
 export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, show_all, show_detail, set_show_all }) => {
 
+    const token = getToken();
     const { branding } = useBrandingContext();
 
     const [childPohons, setChildPohons] = useState(tema.childs || []);
-    const [formList, setFormList] = useState<number[]>([]); // List of form IDs
-    const [PutList, setPutList] = useState<number[]>([]); // List of form IDs
-    const [CrossList, setCrossList] = useState<number[]>([]); // List of form IDs
+    const [formList, setFormList] = useState<number[]>([]);
+    const [PutList, setPutList] = useState<number[]>([]);
+    const [CrossDikirim, setCrossDikirim] = useState<CrosscuttingDikirim[]>(tema.crosscutting_dikirim || []);
+    const [CrossDiterima, setCrossDiterima] = useState<CrosscuttingDiterima[]>(tema.crosscutting || []);
     const [edit, setEdit] = useState<boolean>(false);
     const [DetailCross, setDetailCross] = useState<boolean>(false);
     const [Show, setShow] = useState<boolean>(false);
     const [Cross, setCross] = useState<boolean>(false);
     const [PindahPohon, setPindahPohon] = useState<boolean>(false);
-    const [CrossLoading, setCrossLoading] = useState<boolean>(false);
-    const [PohonCross, setPohonCross] = useState<Cross[]>([]);
     const [Edited, setEdited] = useState<any | null>(null);
     const [Deleted, setDeleted] = useState<boolean>(false);
     const [User, setUser] = useState<any>(null);
-    const token = getToken();
     const [IsCetak, setIsCetak] = useState<boolean>(false);
 
     useEffect(() => {
@@ -125,29 +137,6 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
         setDetailCross((prev) => !prev);
     }
 
-    const fetchPohonCross = async (id: string) => {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL;
-        try {
-            setCrossLoading(true);
-            const response = await fetch(`${API_URL}/crosscutting_opd/findall/${id}`, {
-                headers: {
-                    Authorization: `${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (!response.ok) {
-                throw new Error('terdapat kesalahan di koneksi backend');
-            }
-            const result = await response.json();
-            const data = result.data || [];
-            setPohonCross(data);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setCrossLoading(false);
-        }
-    }
-
     const hapusPohonOpd = async (id: any) => {
         const API_URL = process.env.NEXT_PUBLIC_API_URL;
         try {
@@ -171,11 +160,10 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
             console.error(err);
         }
     };
-    const hapusPohonCross = async (id: any, ori?: string) => {
+    const hapusPohonCross = async (id: any) => {
         const API_URL = process.env.NEXT_PUBLIC_API_URL;
-        // console.log("id yang dihapus : ", id, "ori : ", ori);
         try {
-            const response = await fetch(`${API_URL}/crosscutting_opd/delete/${id}/${User?.nip}`, {
+            const response = await fetch(`${API_URL}/crosscutting_opd/delete/${id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `${token}`,
@@ -187,16 +175,41 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
             }
             const data = await response.json();
             if (data.code == 400) {
-                AlertNotification("Gagal", "Crosscutting hanya bisa dihapus saat setelah disetujui", "error", 3000, true);
+                AlertNotification("Gagal", `${data.data || ""}`, "error", 3000, true);
             } else if (data.code == 200) {
                 AlertNotification("Berhasil", "Data pohon Crosscutting Di hapus", "success", 1000);
-                deleteTrigger();
+                setCrossDikirim(CrossDikirim.filter((data) => data.id_crosscutting !== id));
             }
         } catch (err) {
             AlertNotification("Gagal", "cek koneksi internet atau database server", "error", 2000);
             console.error(err);
         }
     };
+    const hapusCrosscutting = async (id: number) => {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL;
+        try {
+            const response = await fetch(`${API_URL}/crosscutting_opd/delete_crosscutting_diterima/${id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `${token}`,
+                    'Content-Type': 'application/json',
+                },
+            })
+            const data = await response.json();
+            if (data.code == 400) {
+                AlertNotification("Gagal", `${data.data}`, "error", 3000, true);
+            } else if (data.code == 200) {
+                AlertNotification("Berhasil", "Data Crosscutting Di hapus", "success", 1000);
+                setCrossDiterima(CrossDiterima.filter((data) => data.id_crosscutting !== id));
+            }
+        } catch (err) {
+            AlertNotification("Gagal", "cek koneksi internet atau database server", "error", 2000);
+            console.error(err);
+        }
+    };
+    const tambahCrosscuttingBerhasil = (data: CrosscuttingDikirim) => {
+        setCrossDikirim((prev) => [...prev, data]);
+    }
 
 
     return (
@@ -246,6 +259,12 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
                                         <h1>{tema.jenis_pohon} {tema.id}</h1>
                                     }
                                 </div>
+                                {CrossDiterima.length > 0 &&
+                                    <div className="flex text-white justify-center items-center font-bold gap-1 rounded-lg py-2 bg-yellow-500">
+                                        <TbAB2 size={20} />
+                                        Pohon Pilihan Crosscutting
+                                    </div>
+                                }
                                 {/* BODY */}
                                 <div className="flex justify-center my-3">
                                     {Edited ?
@@ -262,6 +281,7 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
                                         />
                                     }
                                 </div>
+
                                 {/* BUTTON ACTION INSIDE BOX SUPER ADMIN, ADMIN OPD, ASN LEVEL 1 */}
                                 {(User?.roles == 'super_admin' || User?.roles == 'admin_opd' || User?.roles == 'level_1') &&
                                     !['Strategic Pemda', 'Tactical Pemda', 'Operational Pemda'].includes(tema.jenis_pohon) &&
@@ -274,11 +294,21 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
                                             <TbPencil className="mr-1" />
                                             Edit
                                         </ButtonSkyBorder>
-                                        <ButtonGreenBorder onClick={handleCross}>
-                                            <TbLayersLinked className="mr-1" />
-                                            CrossCuting
-                                        </ButtonGreenBorder>
-                                        <ModalAddCrosscutting isOpen={Cross} onClose={handleCross} id={tema.id} nama_pohon={tema.nama_pohon} />
+                                        {tema.level_pohon === 6 &&
+                                            <ButtonGreenBorder
+                                                onClick={handleCross}
+                                            >
+                                                <TbLayersLinked className="mr-1" />
+                                                CrossCutting
+                                            </ButtonGreenBorder>
+                                        }
+                                        <ModalAddCrosscutting
+                                            isOpen={Cross}
+                                            onClose={handleCross}
+                                            id={tema.id}
+                                            nama_pohon={tema.nama_pohon}
+                                            onSuccess={(data) => tambahCrosscuttingBerhasil(data)}
+                                        />
                                         <ButtonRedBorder
                                             onClick={() => {
                                                 AlertQuestion("Hapus?", "DATA POHON yang terkait kebawah jika ada akan terhapus juga", "question", "Hapus", "Batal").then((result) => {
@@ -317,11 +347,21 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
                                             <TbPencil className="mr-1" />
                                             Edit
                                         </ButtonSkyBorder>
-                                        <ButtonGreenBorder onClick={handleCross}>
-                                            <TbLayersLinked className="mr-1" />
-                                            CrossCuting
-                                        </ButtonGreenBorder>
-                                        <ModalAddCrosscutting isOpen={Cross} onClose={handleCross} id={tema.id} nama_pohon={tema.nama_pohon} />
+                                        {tema.level_pohon === 6 &&
+                                            <ButtonGreenBorder
+                                                onClick={handleCross}
+                                            >
+                                                <TbLayersLinked className="mr-1" />
+                                                CrossCutting
+                                            </ButtonGreenBorder>
+                                        }
+                                        <ModalAddCrosscutting
+                                            isOpen={Cross}
+                                            onClose={handleCross}
+                                            id={tema.id}
+                                            nama_pohon={tema.nama_pohon}
+                                            onSuccess={(data) => tambahCrosscuttingBerhasil(data)}
+                                        />
                                         <ButtonRedBorder
                                             onClick={() => {
                                                 AlertQuestion("Hapus?", "DATA POHON yang terkait kebawah jika ada akan terhapus juga", "question", "Hapus", "Batal").then((result) => {
@@ -358,11 +398,21 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
                                             <TbPencil className="mr-1" />
                                             Edit
                                         </ButtonSkyBorder>
-                                        <ButtonGreenBorder onClick={handleCross}>
-                                            <TbLayersLinked className="mr-1" />
-                                            CrossCuting
-                                        </ButtonGreenBorder>
-                                        <ModalAddCrosscutting isOpen={Cross} onClose={handleCross} id={tema.id} nama_pohon={tema.nama_pohon} />
+                                        {tema.level_pohon === 6 &&
+                                            <ButtonGreenBorder
+                                                onClick={handleCross}
+                                            >
+                                                <TbLayersLinked className="mr-1" />
+                                                CrossCutting
+                                            </ButtonGreenBorder>
+                                        }
+                                        <ModalAddCrosscutting
+                                            isOpen={Cross}
+                                            onClose={handleCross}
+                                            id={tema.id}
+                                            nama_pohon={tema.nama_pohon}
+                                            onSuccess={(data) => tambahCrosscuttingBerhasil(data)}
+                                        />
                                         <ButtonRedBorder
                                             onClick={() => {
                                                 AlertQuestion("Hapus?", "DATA POHON yang terkait kebawah jika ada akan terhapus juga", "question", "Hapus", "Batal").then((result) => {
@@ -400,11 +450,21 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
                                             <TbPencil className="mr-1" />
                                             Edit
                                         </ButtonSkyBorder>
-                                        <ButtonGreenBorder onClick={handleCross}>
-                                            <TbLayersLinked className="mr-1" />
-                                            CrossCuting
-                                        </ButtonGreenBorder>
-                                        <ModalAddCrosscutting isOpen={Cross} onClose={handleCross} id={tema.id} nama_pohon={tema.nama_pohon} />
+                                        {tema.level_pohon === 6 &&
+                                            <ButtonGreenBorder
+                                                onClick={handleCross}
+                                            >
+                                                <TbLayersLinked className="mr-1" />
+                                                CrossCutting
+                                            </ButtonGreenBorder>
+                                        }
+                                        <ModalAddCrosscutting
+                                            isOpen={Cross}
+                                            onClose={handleCross}
+                                            id={tema.id}
+                                            nama_pohon={tema.nama_pohon}
+                                            onSuccess={(data) => tambahCrosscuttingBerhasil(data)}
+                                        />
                                         <ButtonRedBorder
                                             onClick={() => {
                                                 AlertQuestion("Hapus?", "DATA POHON yang terkait kebawah jika ada akan terhapus juga", "question", "Hapus", "Batal").then((result) => {
@@ -433,13 +493,14 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
                                                 ${tema.jenis_pohon === "Operational N" && 'border-green-500'}
                                                 `}
                                     >
-                                        <ButtonGreenBorder
-                                            className='flex items-center gap-1'
-                                            onClick={handleCross}
-                                        >
-                                            <TbLayersLinked />
-                                            Crosscutting
-                                        </ButtonGreenBorder>
+                                        {tema.level_pohon === 6 &&
+                                            <ButtonGreenBorder
+                                                onClick={handleCross}
+                                            >
+                                                <TbLayersLinked className="mr-1" />
+                                                CrossCutting
+                                            </ButtonGreenBorder>
+                                        }
                                         <ButtonRedBorder
                                             onClick={() => {
                                                 AlertQuestion("Hapus?", "DATA POHON yang terkait kebawah jika ada akan terhapus juga", "question", "Hapus", "Batal").then((result) => {
@@ -456,28 +517,68 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
                                             <TbTrash className='mr-1' />
                                             Hapus
                                         </ButtonRedBorder>
-                                        <ModalAddCrosscutting isOpen={Cross} onClose={handleCross} id={tema.id} nama_pohon={tema.nama_pohon} />
+                                        <ModalAddCrosscutting
+                                            isOpen={Cross}
+                                            onClose={handleCross}
+                                            id={tema.id}
+                                            nama_pohon={tema.nama_pohon}
+                                            onSuccess={(data) => tambahCrosscuttingBerhasil(data)}
+                                        />
+                                    </div>
+                                }
+                                {/* CROSSCUTTING DITERIMA */}
+                                {CrossDiterima.length > 0 &&
+                                    <div className='bg-white border-2 border-yellow-500 rounded-lg'>
+                                        <h1 className='font-light pt-1 text-sm text-slate-600'>*Pohon ini menjadi wadah pilihan untuk menjawab crosscutting dari OPD lain</h1>
+                                        <h1 className='font-bold pt-2 text-yellow-600'>Crosscutting Diterima :</h1>
+                                        <div className="flex flex-col justify-center my-3">
+                                            {tema.crosscutting.map((cr: CrosscuttingDiterima, cr_index: number) => (
+                                                <div key={cr_index} className='flex flex-col rounded border border-yellow-500 gap-1 p-2 my-1 mx-2'>
+                                                    <div className="flex justify-center gap-2">
+                                                        <h1 className='text-yellow-700 font-semibold'>{cr.nama_opd_asal || "opd tidak diketahui"}</h1>
+                                                        <div>
+                                                            <button
+                                                                type="button"
+                                                                className='flex items-center gap-1 rounded-full border border-red-500 p-1 text-red-500 hover:bg-red-300 hover:text-white'
+                                                                onClick={() => AlertQuestion("Hapus", "Hapus Crosscutting?", "question", "Hapus", "Batal").then((result) => {
+                                                                    if (result.isConfirmed) {
+                                                                        hapusCrosscutting(cr.id_crosscutting);
+                                                                    }
+                                                                })}
+                                                            >
+                                                                <TbTrash />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <table>
+                                                        <tr>
+                                                            <td className='border border-yellow-500 p-2 bg-yellow-100'>Keterangan Crosscutting</td>
+                                                            <td className='border-r border-y border-yellow-500 p-2'>{cr.keterangan_crosscutting || ""}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className='border-x border-b border-yellow-500 p-2 bg-yellow-100'>Nama Pohon</td>
+                                                            <td className='border-r border-b border-yellow-500 p-2'>{cr.nama_pohon_asal || "-"}</td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 }
                                 {/* DETAIL DATA CROSSCUTTING */}
                                 {DetailCross &&
-                                    <>
-                                        <div className="flex justify-center my-3">
-                                            {CrossLoading ? (
-                                                <p className="bg-white w-full rounded-lg py-3 text-center">Loading...</p>
-                                            ) : PohonCross.length === 0 ? (
-                                                <p
-                                                    className={`bg-white w-full rounded-lg py-3
+                                    <div className="flex justify-center my-3">
+                                        {CrossDikirim.length === 0 ? (
+                                            <p className={`bg-white w-full rounded-lg py-3
                                                             ${tema.jenis_pohon === 'Operational N' && 'border border-green-500'}
                                                         `}
-                                                >
-                                                    tidak ada crosscuting
-                                                </p>
-                                            ) : (
-                                                <TableCrosscuting item={PohonCross} ori={tema.id} hapusPohonOpd={hapusPohonOpd} />
-                                            )}
-                                        </div>
-                                    </>
+                                            >
+                                                tidak ada crosscutting
+                                            </p>
+                                        ) : (
+                                            <TableCrosscuting item={CrossDikirim} hapusPohonCross={hapusPohonCross} />
+                                        )}
+                                    </div>
                                 }
                                 {/* BUTTON ACTION INSIDE BOX CEK CROSSCUTTING */}
                                 <div
@@ -486,29 +587,38 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
                                             ${tema.jenis_pohon === "Tactical Pemda" && 'border-black'}
                                             ${tema.jenis_pohon === "Operational Pemda" && 'border-black'}
                                             ${tema.jenis_pohon === "Operational N" && 'border-green-500'}
-                                            `}
+                                    `}
                                 >
-                                    <ButtonSky
-                                        className='flex items-center gap-1'
-                                        onClick={() => setIsCetak(true)}
-                                    >
-                                        <TbPrinter />
-                                        Cetak
-                                    </ButtonSky>
-                                    {/* {!['Strategic Pemda', 'Tactical Pemda', 'Operational Pemda'].includes(tema.jenis_pohon) && */}
+                                    <Link href={`/cetak/pokin-opd/${tema.id}`} target="_blank" rel="noopener noreferrer">
+                                        <ButtonSky
+                                            className='flex items-center gap-1'
+                                        >
+                                            <TbPrinter />
+                                            Cetak
+                                        </ButtonSky>
+                                    </Link>
                                     <ButtonSkyBorder
-                                        onClick={() => {
-                                            fetchPohonCross(tema.id);
-                                            handleDetailCross();
-                                        }}
+                                        onClick={() => handleDetailCross()}
                                     >
-                                        <TbDeviceTabletSearch className="mr-1" />
-                                        {DetailCross ? "Sembunyikan" : "Cek Crosscutting"}
+                                        {DetailCross ?
+                                            <div className='flex items-center gap-1'>
+                                                <p className='flex items-center gap-1 rounded-full px-2 text-blue-700 bg-blue-300 animate-pulse'>
+                                                    {CrossDikirim.length || 0}
+                                                </p>
+                                                Sembunyikan
+                                            </div>
+                                            :
+                                            <div className='flex items-center gap-1'>
+                                                <p className='flex items-center gap-1 rounded-full px-2 text-blue-700 bg-blue-300 animate-pulse'>
+                                                    {CrossDikirim.length || 0}
+                                                </p>
+                                                Cek Crosscutting
+                                            </div>
+                                        }
                                     </ButtonSkyBorder>
-                                    {/* } */}
                                 </div>
                                 {/* footer */}
-                                <div className="flex justify-evenly my-3 py-3 hide-on-capture">
+                                <div className="flex flex-wrap justify-evenly my-3 py-3 hide-on-capture">
                                     {(tema.level_pohon != 4 && (
                                         User?.roles == 'super_admin' ||
                                         User?.roles == 'admin_opd' ||
@@ -593,7 +703,7 @@ export const PohonOpd: React.FC<pohon> = ({ tema, deleteTrigger, fetchTrigger, s
                                                     Ambil (Clone)
                                                 </ButtonGreenBorder>
                                             }
-                                            <ButtonGreenBorder className={`px-3 bg-white flex justify-center items-center py-1 bg-gradient-to-r rounded-lg`}
+                                            <ButtonGreenBorder className={`my-1 px-3 bg-white flex justify-center items-center py-1 bg-gradient-to-r rounded-lg`}
                                                 onClick={newChild}
                                             >
                                                 <TbCirclePlus className='mr-1' />
@@ -692,7 +802,6 @@ export const TablePohon = (props: any) => {
     const nama_tematik = props.item.nama_tematik;
     const tagging = props.item.tagging;
     const keterangan = props.item.keterangan;
-    const keterangan_crosscutting = props.item.keterangan_crosscutting;
     const opd = props.item.perangkat_daerah?.nama_opd;
     const nama_opd = props.item.nama_opd;
     const jenis = props.item.jenis_pohon;
@@ -708,7 +817,6 @@ export const TablePohon = (props: any) => {
     const [idReview, setIdReview] = useState<number | null>(null);
     const [Review, setReview] = useState<Review[]>([]);
 
-    const [OpdAsal, setOpdAsal] = useState<string | null>(null);
     const [Proses, setProses] = useState<boolean>(false);
     const [Show, setShow] = useState<boolean>(false);
     const [ShowReview, setShowReview] = useState<boolean>(false);
@@ -791,37 +899,6 @@ export const TablePohon = (props: any) => {
         }
     }, [ShowDetail]);
 
-    useEffect(() => {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL;
-        const fetchOpdAsal = async () => {
-            try {
-                setProses(true);
-                const response = await fetch(`${API_URL}/crosscutting_opd/opd-from/${id}`, {
-                    method: "GET",
-                    headers: {
-                        Authorization: `${token}`,
-                        'Content-Type': 'application/json',
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('kesalahan ketika fetch data opd asal');
-                }
-                const data = await response.json();
-                if (data.code === 500) {
-                    setOpdAsal(null);
-                } else {
-                    setOpdAsal(data.data.nama_opd);
-                    // console.log(data.data.nama_opd);
-                }
-            } catch (err) {
-                console.error(err, "gagal fetch data opd asal");
-            } finally {
-                setProses(false);
-            }
-        }
-        fetchOpdAsal();
-    }, [token, id]);
-
     return (
         <div className='flex flex-col w-full'>
             <div className="flex flex-col w-full">
@@ -833,38 +910,19 @@ export const TablePohon = (props: any) => {
                                 <h1 className='text-emerald-500'><TbCircleCheckFilled /></h1>
                                 <h1 className='font-semibold'>{tg.nama_tagging || "-"}</h1>
                             </div>
-                            <h1 className="p-1 text-slate-600 text-start">{tg.keterangan_tagging || ""}</h1>
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                                {tg?.keterangan_tagging_program?.map((tp: KeteranganTagging, tp_index: number) => (
+                                    <h1 key={tp_index} className="py-1 px-3 text-start text-white bg-yellow-500 rounded-lg">
+                                        {tg.keterangan_tagging_program.length > 1 && `${tp_index + 1}.`} {tp.nama_program_prioritas || ""}
+                                    </h1>
+                                ))}
+                            </div>
                         </div>
                     ))
                 }
             </div>
             <table className='w-full'>
                 <tbody>
-                    {(status === 'crosscutting_disetujui' || status === 'crosscutting_disetujui_existing') &&
-                        <tr>
-                            <td
-                                className={`min-w-[100px] border px-2 py-1 text-start rounded-l-lg ${status === 'crosscutting_disetujui' && 'border-yellow-700'} bg-slate-200
-                                            ${jenis === "Strategic" && "border-red-700"}
-                                            ${jenis === "Tactical" && "border-blue-500"}
-                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
-                                        `}
-                            >
-                                <div className="flex flex-col">
-                                    <p>keterangan</p>
-                                    <p>Crosscutting</p>
-                                </div>
-                            </td>
-                            <td
-                                className={`min-w-[300px] border px-2 py-3 text-start rounded-r-lg ${status === 'crosscutting_disetujui' && 'border-yellow-700'} bg-slate-200
-                                            ${jenis === "Strategic" && "border-red-700"}
-                                            ${jenis === "Tactical" && "border-blue-500"}
-                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
-                                        `}
-                            >
-                                {keterangan_crosscutting ? keterangan_crosscutting : "-"}
-                            </td>
-                        </tr>
-                    }
                     <tr>
                         <td
                             className={`min-w-[100px] border px-2 py-3 bg-white text-start rounded-tl-lg
@@ -931,7 +989,7 @@ export const TablePohon = (props: any) => {
                                                                 ${jenis === "Tactical" && "border-blue-500"}
                                                                 ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                                 ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                                             `}
                                                         >
                                                             Target/Satuan {index + 1}
@@ -942,7 +1000,7 @@ export const TablePohon = (props: any) => {
                                                                 ${jenis === "Tactical" && "border-blue-500"}
                                                                 ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                                 ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                                             `}
                                                         >
                                                             {data.target ? data.target : "-"} / {data.satuan ? data.satuan : "-"}
@@ -957,7 +1015,7 @@ export const TablePohon = (props: any) => {
                                                                 ${jenis === "Tactical" && "border-blue-500"}
                                                                 ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                                 ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                                             `}
                                                     >
                                                         Target/Satuan
@@ -968,7 +1026,7 @@ export const TablePohon = (props: any) => {
                                                                 ${jenis === "Tactical" && "border-blue-500"}
                                                                 ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                                 ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                                             `}
                                                     >
                                                         -
@@ -1013,7 +1071,7 @@ export const TablePohon = (props: any) => {
                                                                 ${jenis === "Tactical" && "border-blue-500"}
                                                                 ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                                 ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                                             `}
                                                         >
                                                             Target/Satuan
@@ -1024,7 +1082,7 @@ export const TablePohon = (props: any) => {
                                                                 ${jenis === "Tactical" && "border-blue-500"}
                                                                 ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                                 ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                                             `}
                                                         >
                                                             {data.target ? data.target : "-"} / {data.satuan ? data.satuan : "-"}
@@ -1039,7 +1097,7 @@ export const TablePohon = (props: any) => {
                                                                 ${jenis === "Tactical" && "border-blue-500"}
                                                                 ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                                 ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                                             `}
                                                     >
                                                         Target/Satuan
@@ -1050,7 +1108,7 @@ export const TablePohon = (props: any) => {
                                                                 ${jenis === "Tactical" && "border-blue-500"}
                                                                 ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                                 ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                                             `}
                                                     >
                                                         -
@@ -1092,7 +1150,7 @@ export const TablePohon = (props: any) => {
                                                 ${jenis === "Tactical" && "border-blue-500"}
                                                 ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                 ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                             `}
                                         >
                                             Target/Satuan
@@ -1103,7 +1161,7 @@ export const TablePohon = (props: any) => {
                                                 ${jenis === "Tactical" && "border-blue-500"}
                                                 ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                 ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                                ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                             `}
                                         >
                                             -
@@ -1119,7 +1177,7 @@ export const TablePohon = (props: any) => {
                                             ${jenis === "Tactical" && "border-blue-500"}
                                             ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                             ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                            ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                            ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                         `}
                                     >
                                         Perangkat Daerah
@@ -1130,7 +1188,7 @@ export const TablePohon = (props: any) => {
                                             ${jenis === "Tactical" && "border-blue-500"}
                                             ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                             ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                            ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                            ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                         `}
                                     >
                                         {opd ? opd : "-"}
@@ -1145,7 +1203,7 @@ export const TablePohon = (props: any) => {
                                             ${jenis === "Tactical" && "border-blue-500"}
                                             ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                             ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                            ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                            ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                         `}
                                     >
                                         Perangkat Daerah
@@ -1156,7 +1214,7 @@ export const TablePohon = (props: any) => {
                                             ${jenis === "Tactical" && "border-blue-500"}
                                             ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                             ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                            ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                            ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                         `}
                                     >
                                         {nama_opd ? nama_opd : "-"}
@@ -1170,7 +1228,7 @@ export const TablePohon = (props: any) => {
                                         ${jenis === "Tactical" && "border-blue-500"}
                                         ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                         ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                        ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                        ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                     `}
                                 >
                                     Keterangan
@@ -1181,7 +1239,7 @@ export const TablePohon = (props: any) => {
                                         ${jenis === "Tactical" && "border-blue-500"}
                                         ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                         ${(jenis === "Strategic Pemda" || jenis === "Tactical Pemda" || jenis === "Operational Pemda") && "border-black"}
-                                        ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}    
+                                        ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                     `}
                                 >
                                     {keterangan ? keterangan : "-"}
@@ -1195,7 +1253,7 @@ export const TablePohon = (props: any) => {
                                             ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                             ${jenis === "Strategic" && "border-red-700"}
                                             ${jenis === "Tactical" && "border-blue-500"}
-                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"} 
+                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                         `}
                                     >
                                         Status
@@ -1206,7 +1264,7 @@ export const TablePohon = (props: any) => {
                                             ${(jenis === "Strategic Crosscutting" || jenis === "Tactical Crosscutting" || jenis === "Operational Crosscutting" || jenis === "Operational N Crosscutting") && "border-yellow-700"}
                                             ${jenis === "Strategic" && "border-red-700"}
                                             ${jenis === "Tactical" && "border-blue-500"}
-                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"} 
+                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                         `}
                                     >
                                         {status === 'menunggu_disetujui' ? (
@@ -1232,28 +1290,6 @@ export const TablePohon = (props: any) => {
                                         ) : (
                                             <span>{status || "-"} / {nama_tematik || "-"}</span>
                                         )}
-                                    </td>
-                                </tr>
-                            }
-                            {(status === "crosscutting_disetujui" || status === "crosscutting_disetujui_existing") &&
-                                <tr>
-                                    <td
-                                        className={`min-w-[100px] border px-2 py-1 text-start rounded-l-lg ${status === 'crosscutting_disetujui' && 'border-yellow-700'} bg-slate-200
-                                            ${jenis === "Strategic" && "border-red-700"}
-                                            ${jenis === "Tactical" && "border-blue-500"}
-                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
-                                        `}
-                                    >
-                                        Crosscutting Dari
-                                    </td>
-                                    <td
-                                        className={`min-w-[300px] border px-2 py-3 text-start rounded-r-lg ${status === 'crosscutting_disetujui' && 'border-yellow-700'} bg-slate-200
-                                            ${jenis === "Strategic" && "border-red-700"}
-                                            ${jenis === "Tactical" && "border-blue-500"}
-                                            ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
-                                        `}
-                                    >
-                                        {Proses ? "Loading.." : OpdAsal ? OpdAsal : "-"}
                                     </td>
                                 </tr>
                             }
@@ -1300,7 +1336,7 @@ export const TablePohon = (props: any) => {
                                                     ${jenis === "Operational Pemda" && "border-black"}
                                                     ${jenis === "Strategic" && "border-red-700"}
                                                     ${jenis === "Tactical" && "border-blue-500"}
-                                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                 `}
                                             >
                                                 review
@@ -1312,7 +1348,7 @@ export const TablePohon = (props: any) => {
                                                     ${jenis === "Operational Pemda" && "border-black"}
                                                     ${jenis === "Strategic" && "border-red-700"}
                                                     ${jenis === "Tactical" && "border-blue-500"}
-                                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                 `}
                                             >
                                                 <div className="flex items-start justify-between gap-1">
@@ -1326,7 +1362,7 @@ export const TablePohon = (props: any) => {
                                                     ${jenis === "Operational Pemda" && "border-black"}
                                                     ${jenis === "Strategic" && "border-red-700"}
                                                     ${jenis === "Tactical" && "border-blue-500"}
-                                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                 `}
                                             >
                                                 <div className="flex items-center justify-center gap-1">
@@ -1344,7 +1380,7 @@ export const TablePohon = (props: any) => {
                                                     ${jenis === "Operational Pemda" && "border-black"}
                                                     ${jenis === "Strategic" && "border-red-700"}
                                                     ${jenis === "Tactical" && "border-blue-500"}
-                                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                 `}
                                             >
                                                 Keterangan
@@ -1356,7 +1392,7 @@ export const TablePohon = (props: any) => {
                                                     ${jenis === "Operational Pemda" && "border-black"}
                                                     ${jenis === "Strategic" && "border-red-700"}
                                                     ${jenis === "Tactical" && "border-blue-500"}
-                                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                 `}
                                             >
                                                 <p>
@@ -1373,7 +1409,7 @@ export const TablePohon = (props: any) => {
                                                     ${jenis === "Operational Pemda" && "border-black"}
                                                     ${jenis === "Strategic" && "border-red-700"}
                                                     ${jenis === "Tactical" && "border-blue-500"}
-                                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}    
+                                                    ${(jenis === "Operational" || jenis === "Operational N") && "border-green-500"}
                                                 `}
                                             >
                                                 <div className="flex items-center justify-center gap-1"
@@ -1450,228 +1486,59 @@ export const TablePohon = (props: any) => {
     )
 }
 export const TableCrosscuting = (props: any) => {
-    const { item, hapusPohonOpd } = props;
+
+    const { item, hapusPohonCross } = props;
 
     return (
-        <div className={`flex flex-col w-full`}>
-            {item.map((data: any, index: number) => (
-                <React.Fragment key={index}>
-                    <div className={`flex flex-wrap w-full bg-white p-2 mt-2 justify-between items-center rounded-t-xl border`}>
-                        <h1 className='p-1'>Crosscutting ke {index + 1}</h1>
-                        <ButtonRedBorder
+        <div className={`flex flex-col gap-1 w-full bg-white border border-blue-600 rounded-lg p-1`}>
+            <h1 className='font-light pt-1 text-sm text-slate-600'>*Pohon ini dikirimkan ke opd lain untuk di Crosscutting</h1>
+            <h1 className='font-bold text-blue-600'>Crosscutting Dikirim :</h1>
+            {item.map((data: CrosscuttingDikirim, index: number) => (
+                <div className='rounded-t-xl border border-blue-500' key={index}>
+                    <div className={`flex w-full bg-white p-2 justify-between items-start rounded-t-xl`}>
+                        <h1 className='p-1 font-semibold text-blue-500'>{index + 1}. Crosscutting ke {data.nama_opd_tujuan || "opd tujuan tidak diketahui"}</h1>
+                        <button
+                            type="button"
+                            className='flex items-center gap-1 rounded-full border border-red-500 p-1 text-red-500 hover:bg-red-300 hover:text-white'
                             onClick={() => {
-                                AlertNotification("Maintenance", "Fitur hapus crosscutting masih dalam pengembangan", "info", 3000);
-                                // if ((data.status === 'crosscutting_disetujui' || data.status === 'crosscutting_disetujui_existing')) {
-                                //     AlertNotification("Pohon Harus Ditolak/Pending", "Pohon harus berstatus ditolak atau Pending untuk bisa dihapus, hal ini mencegah pohon yang sudah diterima (beserta anak pohonnya) terhapus tanpa persetujuan ke dua OPD", "warning", 50000, true);
-                                // } else {
-                                //     AlertQuestion("Hapus?", "Hapus pohon crosscutting?", "question", "Hapus", "Batal").then((result) => {
-                                //         if (result.isConfirmed) {
-                                //             hapusPohonOpd(data.id);
-                                //         }
-                                //     });
-                                // }
+                                AlertQuestion("Hapus?", "Hapus pohon crosscutting?", "question", "Hapus", "Batal").then((result) => {
+                                    if (result.isConfirmed) {
+                                        hapusPohonCross(data.id_crosscutting);
+                                    }
+                                });
                             }}
                         >
-                            Hapus
-                        </ButtonRedBorder>
+                            <TbTrash />
+                        </button>
                     </div>
                     <table key={index} className="w-full">
                         <tbody>
                             <tr>
-                                <td
-                                    className={`min-w-[100px] border px-2 py-3 bg-yellow-100 text-start`}
-                                >
-                                    tema {data.id}
+                                <td className={`min-w-[100px] border border-blue-300 px-2 py-3 bg-yellow-100 text-start`}>
+                                    tema
                                 </td>
-                                <td
-                                    className={`min-w-[300px] border px-2 py-3 bg-yellow-100 text-start`}
-                                >
-                                    {data.nama_pohon ?
-                                        <p>{data.nama_pohon}</p>
+                                <td className={`min-w-[300px] border border-blue-300 px-2 py-3 bg-yellow-100 text-start`}>
+                                    {data.nama_pohon_tujuan ?
+                                        <p>{data.nama_pohon_tujuan}</p>
                                         :
-                                        <p className="italic font-thin">*menunggu diterima & diedit</p>
+                                        <p className="italic text-sm text-red-300">*menunggu diterima & diedit oleh OPD penerima</p>
                                     }
                                 </td>
                             </tr>
-                            {data.indikator ?
-                                data.indikator.length > 1 ?
-                                    data.indikator.map((data: any, index_i: number) => (
-                                        <React.Fragment key={data.id_indikator || index_i}>
-                                            <tr key={data.id_indikator}>
-                                                <td
-                                                    className={`min-w-[100px] border px-2 py-3 bg-white text-start`}
-                                                >
-                                                    Indikator {index_i + 1}
-                                                </td>
-                                                <td
-                                                    className={`min-w-[300px] border px-2 py-3 bg-white text-start`}
-                                                >
-                                                    {data.nama_indikator ? data.nama_indikator : "-"}
-                                                </td>
-                                            </tr>
-                                            {data.targets ?
-                                                data.targets.map((data: any) => (
-                                                    <tr key={data.id_target}>
-                                                        <td
-                                                            className={`min-w-[100px] border px-2 py-3 bg-white text-start`}
-                                                        >
-                                                            Target/Satuan {index_i + 1}
-                                                        </td>
-                                                        <td
-                                                            className={`min-w-[300px] border px-2 py-3 bg-white text-start`}
-                                                        >
-                                                            {data.target ? data.target : "-"} / {data.satuan ? data.satuan : "-"}
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                                :
-                                                <tr>
-                                                    <td
-                                                        className={`min-w-[100px] border px-2 py-3 bg-white text-start`}
-                                                    >
-                                                        Target/Satuan
-                                                    </td>
-                                                    <td
-                                                        className={`min-w-[300px] border px-2 py-3 bg-white text-start   
-                                                        `}
-                                                    >
-                                                        -
-                                                    </td>
-                                                </tr>
-                                            }
-                                        </React.Fragment>
-                                    ))
-                                    :
-                                    data.indikator.map((data: any, index_i: number) => (
-                                        <React.Fragment key={data.id_indikator || index_i}>
-                                            <tr key={data.id_indikator}>
-                                                <td
-                                                    className={`min-w-[100px] border px-2 py-3 bg-white text-start`}
-                                                >
-                                                    Indikator
-                                                </td>
-                                                <td
-                                                    className={`min-w-[300px] border px-2 py-3 bg-white text-start`}
-                                                >
-                                                    {data.nama_indikator ? data.nama_indikator : "-"}
-                                                </td>
-                                            </tr>
-                                            {data.targets ?
-                                                data.targets.map((data: any) => (
-                                                    <tr key={data.id_target}>
-                                                        <td
-                                                            className={`min-w-[100px] border px-2 py-3 bg-white text-start`}
-                                                        >
-                                                            Target/Satuan
-                                                        </td>
-                                                        <td
-                                                            className={`min-w-[300px] border px-2 py-3 bg-white text-start`}
-                                                        >
-                                                            {data.target ? data.target : "-"} / {data.satuan ? data.satuan : "-"}
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                                :
-                                                <tr>
-                                                    <td
-                                                        className={`min-w-[100px] border px-2 py-3 bg-white text-start`}
-                                                    >
-                                                        Target/Satuan
-                                                    </td>
-                                                    <td
-                                                        className={`min-w-[300px] border px-2 py-3 bg-white text-start`}
-                                                    >
-                                                        -
-                                                    </td>
-                                                </tr>
-                                            }
-                                        </React.Fragment>
-                                    ))
-                                :
-                                <>
-                                    <tr>
-                                        <td
-                                            className={`min-w-[100px] border px-2 py-3 bg-white text-start`}
-                                        >
-                                            Indikator
-                                        </td>
-                                        <td
-                                            className={`min-w-[300px] border px-2 py-3 bg-white text-start`}
-                                        >
-                                            -
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td
-                                            className={`min-w-[100px] border px-2 py-3 bg-white text-start`}
-                                        >
-                                            Target/Satuan
-                                        </td>
-                                        <td
-                                            className={`min-w-[300px] border px-2 py-3 bg-white text-start`}
-                                        >
-                                            -
-                                        </td>
-                                    </tr>
-                                </>
-                            }
                             <tr>
-                                <td
-                                    className={`min-w-[100px] border px-2 py-3 bg-white text-start`}
-                                >
-                                    Jenis Pohon
+                                <td className={`min-w-[100px] border border-blue-300 px-2 py-1 bg-white text-start`}>
+                                    Keterangan Crosscutting
                                 </td>
-                                <td
-                                    className={`min-w-[300px] border px-2 py-3 bg-white text-start 
-                                        ${(data.jenis_pohon === "Strategic" || data.jenis_pohon === "Strategic Crosscutting") && 'text-red-700'}
-                                        ${(data.jenis_pohon === "Tactical" || data.jenis_pohon === "Tactical Crosscutting") && 'text-blue-500'}
-                                        ${(data.jenis_pohon === "Operational" || data.jenis_pohon === "Operational Crosscutting") && 'text-green-500'}
-                                        ${(data.jenis_pohon === "Operational N" || data.jenis_pohon === "Operational N Crosscutting") && 'text-green-300'}
-                                    `}
-                                >
-                                    {data.jenis_pohon ?
-                                        data.jenis_pohon
-                                        :
-                                        <p className='italic font-thin'>*menunggu diterima & diedit</p>
-                                    }
-                                </td>
-                            </tr>
-                            {data.nama_opd &&
-                                <tr>
-                                    <td
-                                        className={`min-w-[100px] border px-2 py-1 bg-yellow-100 text-start`}
-                                    >
-                                        Perangkat Daerah
-                                    </td>
-                                    <td
-                                        className={`min-w-[300px] border px-2 py-3 bg-yellow-100 text-start`}
-                                    >
-                                        {data.nama_opd ? data.nama_opd : "-"}
-                                    </td>
-                                </tr>
-                            }
-                            <tr>
-                                <td
-                                    className={`min-w-[100px] border px-2 py-1 bg-white text-start`}
-                                >
-                                    Keterangan
-                                </td>
-                                <td
-                                    className={`min-w-[300px] border px-2 py-3 bg-white text-start`}
-                                >
-                                    {data.keterangan ? data.keterangan : "-"}
+                                <td className={`min-w-[300px] border border-blue-300 px-2 py-3 bg-white text-start`}>
+                                    {data.keterangan_crosscutting ? data.keterangan_crosscutting : "-"}
                                 </td>
                             </tr>
                             {data.status &&
                                 <tr>
-                                    <td
-                                        className={`min-w-[100px] border px-2 py-1 bg-white text-start`}
-                                    >
+                                    <td className={`min-w-[100px] border border-blue-300 px-2 py-1 bg-white text-start`}>
                                         Status
                                     </td>
-                                    <td
-                                        className={`min-w-[300px] border px-2 py-3 bg-white text-start`}
-                                    >
+                                    <td className={`min-w-[300px] border border-blue-300 px-2 py-3 bg-white text-start`}>
                                         {data.status === 'crosscutting_menunggu' ? (
                                             <div className="flex flex-wrap gap-2 items-center">
                                                 pending
@@ -1700,7 +1567,7 @@ export const TableCrosscuting = (props: any) => {
                             }
                         </tbody>
                     </table>
-                </React.Fragment>
+                </div>
             ))}
         </div>
     );
@@ -1737,19 +1604,19 @@ export const newChildButtonName = (jenis: string): string => {
 export const newCrosscutingButtonName = (jenis: string): string => {
     switch (jenis) {
         case 'Strategic Pemda':
-            return '(Crosscuting) Tactical';
+            return '(Crosscutting) Tactical';
         case 'Tactical Pemda':
-            return '(Crosscuting) Operational';
+            return '(Crosscutting) Operational';
         case 'Strategic':
-            return '(Crosscuting) Tactical';
+            return '(Crosscutting) Tactical';
         case 'Tactical':
-            return '(Crosscuting) Opertional';
+            return '(Crosscutting) Opertional';
         case 'Operational':
-            return '(Crosscuting) Opertional N';
+            return '(Crosscutting) Opertional N';
         case 'Operational Pemda':
-            return '(Crosscuting) Opertional N';
+            return '(Crosscutting) Opertional N';
         case 'Operational N':
-            return '(Crosscuting) Opertional N';
+            return '(Crosscutting) Opertional N';
         default:
             return '-'
     }

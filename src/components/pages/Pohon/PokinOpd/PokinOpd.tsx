@@ -1,9 +1,10 @@
 'use client'
 
+// @ts-ignore: allow side-effect CSS import without type declarations
 import '@/components/pages/Pohon/treeflex.css'
 import React, { useState, useEffect, useRef } from 'react';
 import { TbPencil, TbCheck, TbCircleLetterXFilled, TbCirclePlus, TbHandStop, TbPointer, TbSettings, TbHourglass, TbCopy, TbEye, TbPrinter } from 'react-icons/tb';
-import { ButtonGreenBorder, ButtonSkyBorder, ButtonRedBorder, ButtonBlackBorder, ButtonBlack, ButtonSky } from '@/components/global/Button';
+import { ButtonGreenBorder, ButtonSkyBorder, ButtonRedBorder, ButtonBlackBorder, ButtonBlack, ButtonSky, ButtonCetak } from '@/components/global/Button';
 import { LoadingBeat, LoadingButtonClip, LoadingButtonClip2, LoadingClip, LoadingSync } from '@/components/global/Loading';
 import { OpdTahunNull, TahunNull } from '@/components/global/OpdTahunNull';
 import { PohonOpd } from '@/components/lib/Pohon/Opd/PohonOpd';
@@ -12,8 +13,8 @@ import { getUser, getToken, getOpdTahun } from '@/components/lib/Cookie';
 import { ModalPohonPemda, ModalPohonCrosscutting } from './ModalPohonPemda';
 import { ModalTujuanOpd } from '../../tujuanopd/ModalTujuanOpd';
 import { ModalClone } from '../ModalClone';
-import html2canvas from 'html2canvas';
-import { AlertNotification, AlertQuestion2 } from '@/components/global/Alert';
+import { useBrandingContext } from '@/context/BrandingContext';
+import Link from 'next/link';
 
 interface OptionType {
     value: number;
@@ -51,13 +52,15 @@ interface TujuanOpd {
 }
 
 const PokinOpd = () => {
+    const { branding } = useBrandingContext();
+    const nama_opd = branding?.user?.roles == "super_admin" ? branding?.opd?.label : branding?.user?.nama_opd;
+    const kode_opd = branding?.user?.roles == "super_admin" ? branding?.opd?.value : branding?.user?.kode_opd;
 
     const [User, setUser] = useState<any>(null);
     const [Tahun, setTahun] = useState<any>(null);
     const [SelectedOpd, setSelectedOpd] = useState<any>(null);
     const [Pokin, setPokin] = useState<pokin | null>(null);
     const [Loading, setLoading] = useState<boolean | null>(null);
-    const [LoadingCetak, setLoadingCetak] = useState<boolean>(false);
 
     const [Kendali, setKendali] = useState<boolean>(true);
     const [OpenModalTujuanOpd, setOpenModalTujuanOpd] = useState<boolean>(false);
@@ -77,7 +80,7 @@ const PokinOpd = () => {
     const [StrategicPemdaLength, setStrategicPemdaLenght] = useState<number>(0);
     const [TacticalPemdaLength, setTacticalPemdaLenght] = useState<number>(0);
     const [OperationalPemdaLength, setOperationalPemdaLenght] = useState<number>(0);
-    
+
     //pohon cross opd lain
     const [LoadingTotalCrosscutting, setLoadingTotalCrosscutting] = useState<boolean>(false);
     const [PohonCrosscutting, setPohonCrosscutting] = useState<boolean>(false);
@@ -125,62 +128,6 @@ const PokinOpd = () => {
         }
     }, []);
 
-    const handleDownloadPdf = async () => {
-        if (!containerRef.current) return;
-
-        const elementsToHide = document.querySelectorAll(".hide-on-capture") as NodeListOf<HTMLElement>;
-        elementsToHide.forEach((el) => (el.style.display = "none"));
-
-        try {
-            setLoadingCetak(true);
-            const element = containerRef.current;
-            const canvas = await html2canvas(element, {
-                scale: 2, // Higher scale for better quality
-                width: element.scrollWidth + 50, // Use full scrollable width
-                height: element.scrollHeight + 250, // Use full scrollable height
-                windowWidth: element.scrollWidth + 50, // Force full width rendering
-                windowHeight: element.scrollHeight + 250, // Force full height rendering
-                useCORS: true, // For cross-origin images
-            });
-
-            // Create a new canvas with extra padding
-            const paddingTop = 50 // Extra padding for the top of the canvas
-            const newCanvas = document.createElement("canvas");
-            newCanvas.width = canvas.width;
-            newCanvas.height = canvas.height + paddingTop;
-
-            const ctx = newCanvas.getContext("2d");
-            if (ctx) {
-                ctx.fillStyle = "white"; // Optional: Background color
-                ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
-                ctx.drawImage(canvas, 0, paddingTop);
-
-                //hitung posisi horizontal untuk centering
-                const horizontalOffset = (newCanvas.width - canvas.width) / 2;
-
-                // Gambar canvas di tengah horizontal
-                ctx.drawImage(canvas, horizontalOffset, paddingTop);
-            }
-
-            const imgData = newCanvas.toDataURL("image/png");
-            const link = document.createElement("a");
-            link.href = imgData;
-            link.download =
-                User?.roles == 'super_admin'
-                    ? `pohon_kinerja_opd_${SelectedOpd?.value ?? 'opd_undetected'}_${Tahun?.label ?? 'tahun_undetected'
-                    }.png`
-                    : `pohon_kinerja_opd_${User?.kode_opd ?? 'opd_undetected'}_${Tahun?.label ?? 'tahun_undetected'
-                    }.png`;
-            link.click();
-        } catch (error) {
-            alert("Error capturing the element");
-            console.error("Error capturing the element:", error);
-        } finally {
-            // Ensure elements are restored even if an error occurs
-            elementsToHide.forEach((el) => (el.style.display = ""));
-            setLoadingCetak(false);
-        }
-    };
     const toggleCursorMode = () => {
         setCursorMode((prevMode) => (prevMode === "normal" ? "hand" : "normal"));
     }
@@ -268,7 +215,7 @@ const PokinOpd = () => {
         }
     }, [User, SelectedOpd, Tahun, token, TriggerAfterPokinOutside]);
 
-    // FETCH STATUS POHON PEMDA & CROSSCUTTING DI CONTROL POKIN 
+    // FETCH STATUS POHON PEMDA & CROSSCUTTING DI CONTROL POKIN
     useEffect(() => {
         const API_URL = process.env.NEXT_PUBLIC_API_URL;
         const fetchControlPokin = async () => {
@@ -425,6 +372,7 @@ const PokinOpd = () => {
                         :
                         <h1 className="font-bold">Pohon Cascading {Pokin?.nama_opd}</h1>
                 }
+                <ButtonCetak text={"Cetak Pokin OPD PDF"} jenis={"opd"} tahun={Tahun.value} kode_opd={kode_opd} />
                 {(User?.roles == 'admin_opd' || User?.roles == 'super_admin') &&
                     <ButtonBlackBorder onClick={() => setKendali((prev) => !prev)}>{Kendali ? <span className='flex gap-1 items-center'><TbSettings />Sembunyikan</span> : <span className='flex gap-1 items-center'><TbSettings />Tampilkan</span>}</ButtonBlackBorder>
                 }
@@ -560,10 +508,10 @@ const PokinOpd = () => {
                                     </tbody>
                                 </table>
                             </div>
-                            <ModalPohonPemda 
-                                isOpen={PohonPemda} 
-                                isLevel={LevelPemda} 
-                                onClose={() => { handleModalPohonPemda(4) }} 
+                            <ModalPohonPemda
+                                isOpen={PohonPemda}
+                                isLevel={LevelPemda}
+                                onClose={() => { handleModalPohonPemda(4) }}
                                 onSuccess={handleTriggerAfterPokinOutside}
                             />
                         </div>
@@ -588,9 +536,9 @@ const PokinOpd = () => {
                                             </td>
                                             <td className='border-r border-t px-2 py-1 bg-white text-center rounded-tr-lg w-full'>
                                                 <h1 className="font-semibold">
-                                                    {LoadingTotalCrosscutting ? 
+                                                    {LoadingTotalCrosscutting ?
                                                         <LoadingButtonClip2 />
-                                                    :
+                                                        :
                                                         CrossDitolak ? CrossDitolak : 0
                                                     }
                                                 </h1>
@@ -609,9 +557,9 @@ const PokinOpd = () => {
                                             </td>
                                             <td className='border-r border-b px-2 py-1 bg-white text-center rounded-br-lg w-full'>
                                                 <h1 className="font-semibold">
-                                                    {LoadingTotalCrosscutting ? 
+                                                    {LoadingTotalCrosscutting ?
                                                         <LoadingButtonClip2 />
-                                                    :
+                                                        :
                                                         CrossPending ? CrossPending : 0
                                                     }
                                                 </h1>
@@ -620,14 +568,17 @@ const PokinOpd = () => {
                                     </tbody>
                                 </table>
                             </div>
-                            <ButtonSkyBorder className="w-full" onClick={handleModalCrosscutting}>
+                            <ButtonSkyBorder
+                                className="w-full"
+                                onClick={handleModalCrosscutting}
+                            >
                                 <TbSettings className='mr-1' />
                                 Edit
                             </ButtonSkyBorder>
-                            <ModalPohonCrosscutting 
+                            <ModalPohonCrosscutting
                                 isOpen={PohonCrosscutting}
-                                onClose={handleModalCrosscutting} 
-                                onSuccess={handleTriggerAfterPokinOutside} 
+                                onClose={handleModalCrosscutting}
+                                onSuccess={handleTriggerAfterPokinOutside}
                             />
                         </div>
                     </div>
@@ -724,30 +675,20 @@ const PokinOpd = () => {
                                             <TbCopy className='mr-1' />
                                             Clone Pohon Kinerja
                                         </ButtonBlack>
-                                        <ButtonSky
-                                            className='flex flex-wrap items-center justify-center gap-1'
-                                            onClick={() => {
-                                                AlertNotification("Dalam Perbaikan", "Cetak Per Pohon langsung di Strategic, Tactical atau Operational", "info", 2000);
-                                                // setShowAllDetail(true);
-                                                // AlertQuestion2("Sembunyikan Sidebar untuk hasil cetak penuh", "", "warning", "Cetak", "Batal").then((result) => {
-                                                //     if (result.isConfirmed) {
-                                                //         handleDownloadPdf();
-                                                //         console.log(containerRef.current);
-                                                //     }
-                                                // })
-                                            }}
-                                        >
-                                            <TbPrinter className='mr-1' />
-                                            Cetak Penuh Pohon Kinerja
-                                        </ButtonSky>
+                                        <Link href="/cetak/pokin-tujuan-opd" target="_blank" rel="noopener noreferrer">
+                                            <ButtonSky className='w-full flex flex-wrap items-center justify-center gap-1'>
+                                                <TbPrinter className='mr-1' />
+                                                Cetak Tujuan OPD
+                                            </ButtonSky>
+                                        </Link>
                                         {Clone &&
                                             <ModalClone
                                                 isOpen={Clone}
                                                 onClose={() => setClone(false)}
                                                 jenis='opd'
                                                 tahun={Tahun?.value}
-                                                nama_opd={SelectedOpd?.label}
-                                                kode_opd={SelectedOpd?.value}
+                                                nama_opd={nama_opd}
+                                                kode_opd={kode_opd}
                                                 onSuccess={() => setTriggerAfterPokinOutside((prev) => !prev)}
                                             />
                                         }
@@ -795,7 +736,7 @@ const PokinOpd = () => {
                                                 onCancel={() => setFormList(formList.filter((id) => id !== formId))}
                                                 deleteTrigger={() => setDeleted((prev) => !prev)}
                                                 fetchTrigger={() => setTriggerAfterPokinOutside((prev) => !prev)}
-                                                />
+                                            />
                                         </React.Fragment>
                                     ))}
                                 </ul>
