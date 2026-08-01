@@ -1,13 +1,8 @@
 'use client'
 
 import { FiHome } from "react-icons/fi";
-<<<<<<<< HEAD:src/app/RKPD/ranwal/sasaran-pemda/page.tsx
-import Maintenance from "@/components/global/Maintenance";
-import { useBrandingContext } from "@/context/BrandingContext";
-========
 import { useBrandingContext } from "@/context/BrandingContext";
 import TableSasaran from "../../comp/TableSasaran";
->>>>>>>> sumber/main:src/app/(main)/RKPD/ranwal/sasaran-pemda/page.tsx
 
 const RKPDRanwalSasaranPage = () => {
 
@@ -29,14 +24,10 @@ const RKPDRanwalSasaranPage = () => {
                         <h1 className="uppercase font-bold ml-1">{branding?.tahun?.label || ""}</h1>
                     </div>
                 </div>
-<<<<<<<< HEAD:src/app/RKPD/ranwal/sasaran-pemda/page.tsx
-                <Maintenance />
-========
                 <TableSasaran
                     tahun={branding?.tahun?.value || 0}
                     menu="ranwal"
                 />
->>>>>>>> sumber/main:src/app/(main)/RKPD/ranwal/sasaran-pemda/page.tsx
             </div>
         </>
     )

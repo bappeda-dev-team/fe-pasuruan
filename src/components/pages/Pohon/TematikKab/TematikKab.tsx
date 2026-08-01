@@ -6,10 +6,8 @@ import Select from 'react-select'
 import PohonTematik from './PohonTematik';
 import { TahunNull } from '@/components/global/OpdTahunNull';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ButtonBlackBorder, ButtonCetak, ButtonSky } from '@/components/global/Button';
-import { TbEye, TbPrinter } from 'react-icons/tb';
-import html2canvas from 'html2canvas';
-import { AlertNotification, AlertQuestion2 } from '@/components/global/Alert';
+import { ButtonBlackBorder, ButtonCetak } from '@/components/global/Button';
+import { TbEye } from 'react-icons/tb';
 
 interface OptionType {
     value: number;
@@ -27,7 +25,6 @@ const TematikKab = () => {
     const token = getToken();
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [IsLoading, setIsLoading] = useState<boolean>(false);
-    const [LoadingCetak, setLoadingCetak] = useState<boolean>(false);
 
     // SHOW ALL
     const [ShowAll, setShowAll] = useState<boolean>(false);

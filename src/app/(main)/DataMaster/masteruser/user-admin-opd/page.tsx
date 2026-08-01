@@ -1,6 +1,7 @@
 import { FiHome } from "react-icons/fi";
 import Table from "./Table";
 
+const MasterUser = () => {
     return(
         <>
             <div className="flex items-center">

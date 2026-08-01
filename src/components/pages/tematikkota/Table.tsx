@@ -147,39 +147,11 @@ const Table = () => {
                                     Data Kosong / Belum Ditambahkan
                                 </td>
                             </tr>
-                        :
-                        Tematik.map((data, index) => (
-                        <tr key={data.id}>
-                            <td className="border-r border-b px-6 py-4 text-center">{index + 1}</td>
-                            <td className="border-r border-b px-6 py-4 text-center">{data.tema || "-"} - {data.id || "-"}</td>
-                            <td className="border-r border-b px-6 py-4 text-center">{data.keterangan ? data.keterangan : "-"}</td>
-                            {data.indikator ?
-                                <>
-                                    <td className="border-r border-b px-6 py-4 text-center">
-                                        {data.indikator.map((item: indikator) => (
-                                            <p key={item.id_indikator}>{item.nama_indikator}</p>
-                                        ))}
-                                    </td>
-                                    <td className="border-r border-b px-6 py-4 text-center">
-                                        {data.indikator.map((item: indikator, i_index: number) => (
-                                            <React.Fragment key={i_index}>
-                                                {item.targets ?
-                                                    item.targets.map((t: target) => (
-                                                        <p key={t.id_target}>{t.target} / {t.satuan}</p>
-                                                    ))
-                                                    :
-                                                    <p>-</p>
-                                                }
-                                            </React.Fragment>
-
-                                        ))}
-                                    </td>
-                                </>
                             :
                             Tematik.map((data, index) => (
                                 <tr key={data.id}>
                                     <td className="border-r border-b px-6 py-4 text-center">{index + 1}</td>
-                                    <td className="border-r border-b px-6 py-4 text-center">{data.tema}</td>
+                                    <td className="border-r border-b px-6 py-4 text-center">{data.tema || "-"} - {data.id || "-"}</td>
                                     <td className="border-r border-b px-6 py-4 text-center">{data.keterangan ? data.keterangan : "-"}</td>
                                     {data.indikator ?
                                         <>
@@ -189,39 +161,69 @@ const Table = () => {
                                                 ))}
                                             </td>
                                             <td className="border-r border-b px-6 py-4 text-center">
-                                                {data.indikator.map((item: indikator) => (
-                                                    item.targets?.map((t: target) => (
-                                                        <p key={t.id_target}>{t.target} / {t.satuan}</p>
-                                                    ))
+                                                {data.indikator.map((item: indikator, i_index: number) => (
+                                                    <React.Fragment key={i_index}>
+                                                        {item.targets ?
+                                                            item.targets.map((t: target) => (
+                                                                <p key={t.id_target}>{t.target} / {t.satuan}</p>
+                                                            ))
+                                                            :
+                                                            <p>-</p>
+                                                        }
+                                                    </React.Fragment>
+
                                                 ))}
                                             </td>
                                         </>
                                         :
-                                        <>
-                                            <td className="border-r border-b px-6 py-4 text-center">-</td>
-                                            <td className="border-r border-b px-6 py-4 text-center">-</td>
-                                        </>
+                                        Tematik.map((data, index) => (
+                                            <tr key={data.id}>
+                                                <td className="border-r border-b px-6 py-4 text-center">{index + 1}</td>
+                                                <td className="border-r border-b px-6 py-4 text-center">{data.tema}</td>
+                                                <td className="border-r border-b px-6 py-4 text-center">{data.keterangan ? data.keterangan : "-"}</td>
+                                                {data.indikator ?
+                                                    <>
+                                                        <td className="border-r border-b px-6 py-4 text-center">
+                                                            {data.indikator.map((item: indikator) => (
+                                                                <p key={item.id_indikator}>{item.nama_indikator}</p>
+                                                            ))}
+                                                        </td>
+                                                        <td className="border-r border-b px-6 py-4 text-center">
+                                                            {data.indikator.map((item: indikator) => (
+                                                                item.targets?.map((t: target) => (
+                                                                    <p key={t.id_target}>{t.target} / {t.satuan}</p>
+                                                                ))
+                                                            ))}
+                                                        </td>
+                                                    </>
+                                                    :
+                                                    <>
+                                                        <td className="border-r border-b px-6 py-4 text-center">-</td>
+                                                        <td className="border-r border-b px-6 py-4 text-center">-</td>
+                                                    </>
+                                                }
+                                                <td className="border-r border-b px-6 py-4">
+                                                    <div className="flex flex-col jutify-center items-center gap-2">
+                                                        <ButtonGreen className="w-full" halaman_url={`/tematikpemda/${data.id}`}>Edit</ButtonGreen>
+                                                        <ButtonRed
+                                                            className="w-full"
+                                                            onClick={() => {
+                                                                AlertQuestion("Hapus?", "Hapus tematik pemda yang dipilih?", "question", "Hapus", "Batal").then((result) => {
+                                                                    if (result.isConfirmed) {
+                                                                        hapusTematik(data.id);
+                                                                    }
+                                                                });
+                                                            }}
+                                                        >
+                                                            Hapus
+                                                        </ButtonRed>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
                                     }
-                                    <td className="border-r border-b px-6 py-4">
-                                        <div className="flex flex-col jutify-center items-center gap-2">
-                                            <ButtonGreen className="w-full" halaman_url={`/tematikpemda/${data.id}`}>Edit</ButtonGreen>
-                                            <ButtonRed
-                                                className="w-full"
-                                                onClick={() => {
-                                                    AlertQuestion("Hapus?", "Hapus tematik pemda yang dipilih?", "question", "Hapus", "Batal").then((result) => {
-                                                        if (result.isConfirmed) {
-                                                            hapusTematik(data.id);
-                                                        }
-                                                    });
-                                                }}
-                                            >
-                                                Hapus
-                                            </ButtonRed>
-                                        </div>
-                                    </td>
                                 </tr>
-                            ))
-                        }
+                            ))}
                     </tbody>
                 </table>
             </div>

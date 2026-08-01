@@ -886,7 +886,7 @@ export const TablePohon = (props: any) => {
                                                 ${jenis === "Operational Pemda" && "border-black"}
                                             `}
                                         >
-                                            -
+                                            <p>Target/Satuan</p>
                                         </td>
                                         <td
                                             className={`min-w-[300px] border px-2 py-3 bg-white text-start
